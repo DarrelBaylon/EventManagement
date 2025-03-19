@@ -10,12 +10,11 @@ namespace EventManagementSystem
 {
     internal class Program
     {
+        static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event", "[4] Delete Event", "[5] Exit" };
         static void Main(string[] args)
         {
 
             Console.WriteLine("Welcome to EVENT MANAGEMENT SYSTEM!");
-
-            string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event", "[4] Delete Event", "[5] Exit" };
 
             foreach (var Event in events)
             {
