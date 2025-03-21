@@ -14,6 +14,11 @@ namespace EventManagementSystem
         static void Main(string[] args)
         {
 
+            DisplayEvents();
+  
+        }
+        static void DisplayEvents()
+        {
             Console.WriteLine("Welcome to EVENT MANAGEMENT SYSTEM!");
 
             foreach (var Event in events)
@@ -23,48 +28,78 @@ namespace EventManagementSystem
 
             Console.Write("Choose an Event: ");
             int userEvent = Convert.ToInt16(Console.ReadLine());
-       
-            while (userEvent != 5)
+
+            switch (userEvent)
             {
+                //this is a CASE statement for CREATING an Event
+                case 1:
+                    CreateEvent();
+                    break;
 
-                switch (userEvent)
-                {
-                    //this is a CASE statement for CREATING an Event
-                    case 1:
-                        Console.Write("Enter Event NAME: ");
-                        string eventName = Console.ReadLine();
-                        break;
+                //this is a CASE statement for VIEWING events
+                //I plan to use arrayList in this case, however idk how
+                //in the meantime it will be just this
+                case 2:
+                    ViewEvent();
+                    break;
 
-                    //this is a CASE statement for VIEWING events
-                    //I plan to use arrayList in this case, however idk how
-                    //in the meantime it will be just this
-                    case 2:
-                        Console.Write("UNFINISHED");
-                        break;
+                //this is a CASE statement for UPDATING events
+                case 3:
+                    UpdateEvent();
+                    break;
 
-                    //this is a CASE statement for UPDATING events
-                    case 3:
-                        Console.Write("Enter The Event to UPDATE: ");
-                        string updateEvent = Console.ReadLine();
-                        break;
+                //this is a CASE statement for DELETING events
+                case 4:
+                    DeleteEvent();
+                    break;
 
-                    //this is a CASE statement for DELETING events
-                    case 4:
-                        Console.Write("Enter the Event to DELETE: ");
-                        string deleteEvent = Console.ReadLine();
-                        break;
+                //this is a CASE statement for EXITING the SYSTEM
+                case 5:
+                    Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
+                    break;
 
-                    //this is a CASE statement for EXITING the SYSTEM
-                    case 5:
-                        Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
-                        break;
-
-                    //for error handling
-                    default:
-                        Console.WriteLine("NOT AN ACTION");
-                        break;
-                }
+                //for error handling
+                default:
+                    Console.WriteLine("NOT AN EVENT ACTION");
+                    break;
             }
+            //a}
+        }
+
+        static void CreateEvent()
+        {
+            Console.Write("Enter Event Name: ");
+            string eventName = Console.ReadLine();
+
+            Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
+            DisplayEvents();
+        }
+        static void ViewEvent()
+        {
+            Console.WriteLine("THESE ARE THE EVENTS");
+            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
+            DisplayEvents();
+        }
+        static void UpdateEvent()
+        {
+            Console.Write("Enter the Event Name that you would like to UPDATE: ");
+            string updateEventBefore = Console.ReadLine();
+
+            Console.Write("Enter the NEW Name for your EVENT: ");
+            string updateEventCurrent = Console.ReadLine();
+
+            Console.WriteLine($"SUCCESSFULLY UPDATED THE EVENT FROM [{updateEventBefore}] INTO [{updateEventCurrent}]");
+            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
+            DisplayEvents();
+        }
+        static void DeleteEvent()
+        {
+            Console.Write("Enter the Event Name that you would like to DELETE: ");
+            string deleteEvent = Console.ReadLine();
+            Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: {deleteEvent}");
+            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
+            DisplayEvents();
+
         }
     }
 }
