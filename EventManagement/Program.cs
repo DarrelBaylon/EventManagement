@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 //Baylon, Darrel Andrew P.
 //BSIT 2 - 1
@@ -10,6 +11,7 @@ namespace EventManagementSystem
 {
     internal class Program
     {
+        static List<string> eventList = new List<string>();
         static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event", "[4] Delete Event", "[5] Exit" };
         static void Main(string[] args)
         {
@@ -19,6 +21,7 @@ namespace EventManagementSystem
         }
         static void DisplayEvents()
         {
+            Console.WriteLine("-------------------");
             Console.WriteLine("Welcome to EVENT MANAGEMENT SYSTEM!");
 
             foreach (var Event in events)
@@ -70,36 +73,56 @@ namespace EventManagementSystem
         {
             Console.Write("Enter Event Name: ");
             string eventName = Console.ReadLine();
-
             Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
+            eventList.Add(eventName);
             DisplayEvents();
         }
         static void ViewEvent()
         {
             Console.WriteLine("THESE ARE THE EVENTS");
-            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
+            foreach(var viewEventList in eventList)
+            {
+                Console.WriteLine(viewEventList);
+            }
             DisplayEvents();
         }
         static void UpdateEvent()
         {
             Console.Write("Enter the Event Name that you would like to UPDATE: ");
             string updateEventBefore = Console.ReadLine();
+            if(eventList.Contains(updateEventBefore))
+            {
+                Console.Write("Enter the NEW Name for your EVENT: ");
+                string updateEventCurrent = Console.ReadLine();
+                eventList.Remove(updateEventBefore);
+                eventList.Add(updateEventCurrent);
+                Console.WriteLine($"SUCCESSFULLY UPDATED THE EVENT FROM [{updateEventBefore}] INTO [{updateEventCurrent}]");              
+                DisplayEvents();
+            }
+            else
+            {
+                Console.WriteLine("EVENT NOT FOUND");
+                UpdateEvent();
+            }
+            
 
-            Console.Write("Enter the NEW Name for your EVENT: ");
-            string updateEventCurrent = Console.ReadLine();
-
-            Console.WriteLine($"SUCCESSFULLY UPDATED THE EVENT FROM [{updateEventBefore}] INTO [{updateEventCurrent}]");
-            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
-            DisplayEvents();
+            
         }
         static void DeleteEvent()
         {
             Console.Write("Enter the Event Name that you would like to DELETE: ");
             string deleteEvent = Console.ReadLine();
-            Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: {deleteEvent}");
-            Console.WriteLine("THIS SECTION IS STILL UNDER DEVELOPMENT");
-            DisplayEvents();
-
+            if (eventList.Contains(deleteEvent))
+            {
+                eventList.Remove(deleteEvent);
+                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: {deleteEvent}");
+                DisplayEvents();
+            }
+            else
+            {
+                Console.WriteLine("EVENT NOT FOUND");
+                DeleteEvent();
+            }
         }
     }
 }
