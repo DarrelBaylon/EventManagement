@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using EventManagement_BusinessDataLogic;    
+
 
 //Baylon, Darrel Andrew P.
 //BSIT 2 - 1
@@ -17,7 +19,7 @@ namespace EventManagementSystem
         {
 
             DisplayEvents();
-  
+
         }
         static void DisplayEvents()
         {
@@ -80,7 +82,7 @@ namespace EventManagementSystem
         static void ViewEvent()
         {
             Console.WriteLine("THESE ARE THE EVENTS");
-            foreach(var viewEventList in eventList)
+            foreach (var viewEventList in eventList)
             {
                 Console.WriteLine(viewEventList);
             }
@@ -90,13 +92,13 @@ namespace EventManagementSystem
         {
             Console.Write("Enter the Event Name that you would like to UPDATE: ");
             string updateEventBefore = Console.ReadLine();
-            if(eventList.Contains(updateEventBefore))
+            if (eventList.Contains(updateEventBefore))
             {
                 Console.Write("Enter the NEW Name for your EVENT: ");
                 string updateEventCurrent = Console.ReadLine();
                 eventList.Remove(updateEventBefore);
                 eventList.Add(updateEventCurrent);
-                Console.WriteLine($"SUCCESSFULLY UPDATED THE EVENT FROM [{updateEventBefore}] INTO [{updateEventCurrent}]");              
+                Console.WriteLine($"SUCCESSFULLY UPDATED THE EVENT FROM [{updateEventBefore}] INTO [{updateEventCurrent}]");
                 DisplayEvents();
             }
             else
@@ -104,9 +106,9 @@ namespace EventManagementSystem
                 Console.WriteLine("EVENT NOT FOUND");
                 DisplayEvents();
             }
-            
 
-            
+
+
         }
         static void DeleteEvent()
         {
