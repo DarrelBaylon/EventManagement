@@ -99,8 +99,8 @@ namespace EventsManagementSystem
 
             if (!EventManagementProcess.UpdateEvent(updateEventBefore, updateEventCurrent))
             {
-                Console.WriteLine($"THIS EVENT: {updateEventBefore} WAS NOT CREATED!\n OR THIS EVENT: " +
-                    $"{updateEventCurrent} IS ALREADY CREATED!");
+                Console.WriteLine($"THIS EVENT: [{updateEventBefore}] DOES NOT EXIST!\nOR THIS EVENT: " +
+                    $"[{updateEventCurrent}] WAS ALREADY CREATED!");
             }
             else
             {
