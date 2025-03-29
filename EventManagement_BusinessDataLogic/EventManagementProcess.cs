@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,26 +10,21 @@ namespace EventManagement_BusinessDataLogic
     public class EventManagementProcess
     {
         public static List<string> eventList = new List<string>();
-        public static bool UpdateEvent(string updateEventBefore, string updateEventCurrent)
+        public static bool UpdateEvent(string updateEventBefore)
         {
-            if (eventList.Contains(updateEventBefore) && !eventList.Contains(updateEventCurrent))
+            if (eventList.Contains(updateEventBefore))
             {
 
                 eventList.Remove(updateEventBefore);
-                eventList.Add(updateEventCurrent);
+               
                 return true;
             }
             return false;
         }
-        public static bool CreateEvent(string eventName)
+        
+        public static void CreateEvent(string eventName)
         {
-            if (!eventList.Contains(eventName))
-            {
-                eventList.Add(eventName);
-                return true;
-            }
-            return false;
-            
+            eventList.Add(eventName);
         }
         public static bool DeleteEvent(string deleteEvent)
         {

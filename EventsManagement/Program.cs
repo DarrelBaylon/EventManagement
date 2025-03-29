@@ -33,79 +33,84 @@ namespace EventsManagementSystem
             Console.Write("Choose an Event: ");
             int userEvent = Convert.ToInt16(Console.ReadLine());
 
-                switch (userEvent)
-                {
-                    //this is a CASE statement for CREATING an Event
-                    case 1:
-                        CreateEvent();
-                        break;
+            switch (userEvent)
+            {
+                //this is a CASE statement for CREATING an Event
+                case 1:
+                    CreateEvent();
+                    break;
 
-                    //this is a CASE statement for VIEWING events
-                    case 2:
-                        ViewEvent();
-                        break;
+                //this is a CASE statement for VIEWING events
+                case 2:
+                    ViewEvent();
+                    break;
 
-                    //this is a CASE statement for UPDATING events
-                    case 3:
-                        UpdateEvent();
-                        break;
+                //this is a CASE statement for UPDATING events
+                case 3:
+                    UpdateEvent();
+                    break;
 
-                    //this is a CASE statement for DELETING events
-                    case 4:
-                        DeleteEvent();
-                        break;
+                //this is a CASE statement for DELETING events
+                case 4:
+                    DeleteEvent();
+                    break;
 
-                    //this is a CASE statement for EXITING the SYSTEM
-                    case 5:
-                        Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
-                        break;
+                //this is a CASE statement for EXITING the SYSTEM
+                case 5:
+                    Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
+                    break;
 
-                    //for error handling
-                    default:
-                        Console.WriteLine("NOT AN EVENT ACTION");
-                        break;
-                }
+                //for error handling
+                default:
+                    Console.WriteLine("NOT AN EVENT ACTION");
+                    break;
+            }
         }
         static void ViewEvent()
         {
-            Console.WriteLine("THESE ARE THE EVENTS");
-            foreach (var viewEventList in EventManagementProcess.eventList)
+            if (EventManagementProcess.eventList.Count() != 0)
             {
-                Console.WriteLine(viewEventList);
-            }
-            DisplayEvents();
-        }
-        static void CreateEvent()
-        {
-            Console.Write("Enter Event Name: ");
-            string eventName = Console.ReadLine();
-
-            if (!EventManagementProcess.CreateEvent(eventName))
-            {
-                Console.WriteLine("THIS EVENT IS ALREADY CREATED!");
+                Console.WriteLine("THESE ARE THE EVENTS");
+                foreach (var viewEventList in EventManagementProcess.eventList)
+                {
+                    Console.WriteLine(viewEventList);
+                }
+                DisplayEvents();
             }
             else
             {
-                Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
+                Console.WriteLine("THERE ARE CURRENTLY NO EVENTS");
                 DisplayEvents();
             }
+        }
+        static void CreateEvent()
+        {
+            
+            Console.Write("Enter Event Name: ");
+            string eventName = Console.ReadLine();
+            EventManagementProcess.CreateEvent(eventName);
+            Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
+            DisplayEvents();
+            
         }
         static void UpdateEvent()
         {
             Console.Write("Enter the Event Name that you would like to UPDATE: ");
             string updateEventBefore = Console.ReadLine();
-            Console.Write("Enter the NEW Name for your EVENT: ");
-            string updateEventCurrent = Console.ReadLine();
 
-            if (!EventManagementProcess.UpdateEvent(updateEventBefore, updateEventCurrent))
+            if (!EventManagementProcess.UpdateEvent(updateEventBefore))
             {
-                Console.WriteLine($"THIS EVENT: [{updateEventBefore}] DOES NOT EXIST!\nOR THIS EVENT: " +
-                    $"[{updateEventCurrent}] WAS ALREADY CREATED!");
+                Console.WriteLine($"THIS EVENT: [{updateEventBefore}] DOES NOT EXIST!");
+                DisplayEvents();
             }
             else
             {
+                Console.Write("Enter the NEW Name for your EVENT: ");
+                string eventList = Console.ReadLine();
+                EventManagementProcess.CreateEvent(eventList);
+
                 Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM {updateEventBefore} TO " +
-                                    $"{updateEventCurrent}");
+                                    $"{eventList}");
                 DisplayEvents();
             }
         }
@@ -117,6 +122,7 @@ namespace EventsManagementSystem
             if (!EventManagementProcess.DeleteEvent(deleteEvent))
             {
                 Console.WriteLine("THIS EVENT DOES NOT EXIST!");
+                DisplayEvents();
             }
             else
             {
