@@ -70,10 +70,14 @@ namespace EventsManagementSystem
         {
             if (EventManagementProcess.eventList.Count() != 0)
             {
+             
                 Console.WriteLine("THESE ARE THE EVENTS");
-                foreach (var viewEventList in EventManagementProcess.eventList)
+                for (int i = 0; i < EventManagementProcess.eventList.Count; i++)
                 {
-                    Console.WriteLine(viewEventList);
+                    Console.WriteLine($"Event: {EventManagementProcess.eventList[i]}");
+                    Console.WriteLine($"Start Date: {EventManagementProcess.eventStartDates[i]}");
+                    Console.WriteLine($"End Date: {EventManagementProcess.eventEndDates[i]}");
+                    Console.WriteLine("-------------------------");
                 }
                 DisplayEvents();
             }
@@ -88,7 +92,14 @@ namespace EventsManagementSystem
             
             Console.Write("Enter Event Name: ");
             string eventName = Console.ReadLine();
-            EventManagementProcess.CreateEvent(eventName);
+
+            Console.Write("Enter Start Date (MM-DD-YYYY): ");
+            string startDate = Console.ReadLine();
+
+            Console.Write("Enter End Date (MM-DD-YYYY): ");
+            string endDate = Console.ReadLine();
+
+            EventManagementProcess.CreateEvent(eventName, startDate, endDate);
             Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
             DisplayEvents();
             
@@ -107,10 +118,19 @@ namespace EventsManagementSystem
             {
                 Console.Write("Enter the NEW Name for your EVENT: ");
                 string eventList = Console.ReadLine();
-                EventManagementProcess.CreateEvent(eventList);
+
+                Console.Write("Enter the NEW StartDate for your EVENT (MM-DD-YYYY): ");
+                string startDate = Console.ReadLine();
+
+                Console.Write("Enter the NEW EndDate for your EVENT (MM-DD-YYYY): ");
+                string endDate = Console.ReadLine();
+
+                EventManagementProcess.CreateEvent(eventList, startDate, endDate);
 
                 Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM {updateEventBefore} TO " +
                                     $"{eventList}");
+                Console.WriteLine($"EVENT DURATION: {startDate} - " +
+                                    $"{endDate}");
                 DisplayEvents();
             }
         }
