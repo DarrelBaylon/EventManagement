@@ -74,10 +74,12 @@ namespace EventsManagementSystem
                 Console.WriteLine("THESE ARE THE EVENTS");
                 for (int i = 0; i < EventManagementProcess.eventList.Count; i++)
                 {
+                    Console.WriteLine("-------------------------");
                     Console.WriteLine($"Event: {EventManagementProcess.eventList[i]}");
                     Console.WriteLine($"Start Date: {EventManagementProcess.eventStartDates[i]}");
+                    Console.WriteLine($"Start Time: {EventManagementProcess.eventStartTimes[i]}");
                     Console.WriteLine($"End Date: {EventManagementProcess.eventEndDates[i]}");
-                    Console.WriteLine("-------------------------");
+                    Console.WriteLine($"End Time: {EventManagementProcess.eventEndTimes[i]}");
                 }
                 DisplayEvents();
             }
@@ -96,11 +98,17 @@ namespace EventsManagementSystem
             Console.Write("Enter Start Date (MM-DD-YYYY): ");
             string startDate = Console.ReadLine();
 
+            Console.Write("Enter Start Time (12 Hour Format: 12:00 AM): ");
+            string startTime = Console.ReadLine();
+
             Console.Write("Enter End Date (MM-DD-YYYY): ");
             string endDate = Console.ReadLine();
 
-            EventManagementProcess.CreateEvent(eventName, startDate, endDate);
-            Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: {eventName}");
+            Console.Write("Enter End Time (12 Hour Format: 12:00 AM): ");
+            string endTime = Console.ReadLine();
+
+            EventManagementProcess.CreateEvent(eventName, startDate, endDate, startTime, endTime);
+            Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: [{eventName}]");
             DisplayEvents();
             
         }
@@ -122,15 +130,21 @@ namespace EventsManagementSystem
                 Console.Write("Enter the NEW StartDate for your EVENT (MM-DD-YYYY): ");
                 string startDate = Console.ReadLine();
 
+                Console.Write("Enter the NEW StartTime for your EVENT (12 Hour Format: 12:00 AM): ");
+                string startTime = Console.ReadLine();
+
                 Console.Write("Enter the NEW EndDate for your EVENT (MM-DD-YYYY): ");
                 string endDate = Console.ReadLine();
 
-                EventManagementProcess.CreateEvent(eventList, startDate, endDate);
+                Console.Write("Enter the NEW EndTime for your EVENT (12 Hour Format: 12:00 AM): ");
+                string endTime = Console.ReadLine();
 
-                Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM {updateEventBefore} TO " +
-                                    $"{eventList}");
-                Console.WriteLine($"EVENT DURATION: {startDate} - " +
-                                    $"{endDate}");
+                EventManagementProcess.CreateEvent(eventList, startDate, endDate, startTime, endTime);
+
+                Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM [{updateEventBefore}] TO " +
+                                    $"[{eventList}]");
+                Console.WriteLine($"EVENT DURATION: [{startDate} {startTime}] UNTIL " +
+                                    $"[{endDate} {endTime}]");
                 DisplayEvents();
             }
         }
@@ -146,7 +160,7 @@ namespace EventsManagementSystem
             }
             else
             {
-                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: {deleteEvent}");
+                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{deleteEvent}]");
                 DisplayEvents();
             }
         }
