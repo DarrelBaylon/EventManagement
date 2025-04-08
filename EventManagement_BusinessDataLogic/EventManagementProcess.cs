@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,18 @@ namespace EventManagement_BusinessDataLogic
         public static List<string> eventEndDates = new List<string>();
         public static List<string> eventStartTimes = new List<string>();
         public static List<string> eventEndTimes = new List<string>();
+        public static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event",
+                                                "[4] Delete Event", "[5] Exit" };
+        public static string[] months = new string[] { "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY",
+                                                "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER", "JAN",
+                                                "FEB", "MAR", "APR", "JUN", "JUL", "AUG", "SEPT", "OCT", "NOV",
+                                                "DEC"};
+        static string[] monthsWith31Days = new string[] { "JANUARY", "MARCH", "MAY", "JULY",
+                                                          "AUGUST", "OCTOBER", "DECEMBER", "DEC", "JAN", "MAR",
+                                                          "MAY", "JUL", "AUG", "OCT"};
+        static string[] monthsWith30Days = new string[] { "APRIL", "JUNE", "SEPTEMBER", "NOVEMBER", "APR", "JUN",
+                                                          "SEPT", "NOV"};
+        static string[] monthsWith28Days = new string[] { "FEBRUARY", "FEB" };
 
         public static bool UpdateEvent(string updateEventBefore)
         {
@@ -100,5 +113,26 @@ namespace EventManagement_BusinessDataLogic
             }
             return true; 
         }
+        public static bool CheckStartDate(string startMonth, int startDay)
+        {
+            if (monthsWith31Days.Contains(startMonth) && startDay >= 1 && startDay <= 31 ||
+            monthsWith30Days.Contains(startMonth) && startDay >= 1 && startDay <= 30 ||
+            monthsWith28Days.Contains(startMonth) && startDay >= 1 && startDay <= 28)
+            {
+                return true;
+            }
+            return false;
+        }
+        public static bool CheckEndDate(string endMonth, int endDay)
+        {
+            if (monthsWith31Days.Contains(endMonth) && endDay >= 1 && endDay <= 31 ||
+            monthsWith30Days.Contains(endMonth) && endDay >= 1 && endDay <= 30 ||
+            monthsWith28Days.Contains(endMonth) && endDay >= 1 && endDay <= 28)
+            {
+                return true;
+            }
+            return false;
+        }
+
     }
 }

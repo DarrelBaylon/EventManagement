@@ -14,19 +14,6 @@ namespace EventsManagementSystem
 {
     internal class Program
     {
-        static string[] months = new string[] { "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY",
-                                                "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER", "JAN",
-                                                "FEB", "MAR", "APR", "JUN", "JUL", "AUG", "SEPT", "OCT", "NOV",
-                                                "DEC"};
-        static string[] monthsWith31Days = new string[] { "JANUARY", "MARCH", "MAY", "JULY",
-                                                          "AUGUST", "OCTOBER", "DECEMBER", "DEC", "JAN", "MAR",
-                                                          "MAY", "JUL", "AUG", "OCT"};
-        static string[] monthsWith30Days = new string[] { "APRIL", "JUNE", "SEPTEMBER", "NOVEMBER", "APR", "JUN",
-                                                          "SEPT", "NOV"};
-        static string[] monthsWith28Days = new string[] { "FEBRUARY", "FEB" };
-
-        static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event",
-                                                "[4] Delete Event", "[5] Exit" };
         static void Main(string[] args)
         {
 
@@ -38,7 +25,7 @@ namespace EventsManagementSystem
             Console.WriteLine("--------------------");
             Console.WriteLine("Welcome to EVENT MANAGEMENT SYSTEM!");
 
-            foreach (var Event in events)
+            foreach (var Event in EventManagementProcess.events)
             {
                 Console.WriteLine(Event);
             }
@@ -114,15 +101,13 @@ namespace EventsManagementSystem
                 Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
                 string startMonth = Console.ReadLine().ToUpper();
 
-                if (months.Contains(startMonth))
+                if (EventManagementProcess.months.Contains(startMonth))
                 {
 
                     Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
                     int startDay = Convert.ToByte(Console.ReadLine());
 
-                    if (monthsWith31Days.Contains(startMonth) && startDay >= 1 && startDay <= 31 ||
-                        monthsWith30Days.Contains(startMonth) && startDay >= 1 && startDay <= 30 ||
-                        monthsWith28Days.Contains(startMonth) && startDay >= 1 && startDay <= 28)
+                    if (EventManagementProcess.CheckStartDate(startMonth,startDay))
                     {
 
                         Console.Write("Enter the YEAR (YYYY) which the EVENT will begin: ");
@@ -133,15 +118,13 @@ namespace EventsManagementSystem
                         Console.Write("Enter the MONTH (MM) which the EVENT will end: ");
                         string endMonth = Console.ReadLine().ToUpper();
 
-                        if (months.Contains(endMonth))
+                        if (EventManagementProcess.months.Contains(endMonth))
                         {
 
                             Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
                             int endDay = Convert.ToByte(Console.ReadLine());
 
-                            if (monthsWith31Days.Contains(endMonth) && endDay >= 1 && endDay <= 31 ||
-                                monthsWith30Days.Contains(endMonth) && endDay >= 1 && endDay <= 30 ||
-                                monthsWith28Days.Contains(endMonth) && endDay >= 1 && endDay <= 28)
+                            if (EventManagementProcess.CheckEndDate(endMonth, endDay))
                             {
                                 Console.Write("Enter the YEAR (YYYY) which the EVENT will end: ");
                                 int endYear = Convert.ToInt32(Console.ReadLine());
@@ -226,16 +209,14 @@ namespace EventsManagementSystem
                         Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
                         string startMonth = Console.ReadLine().ToUpper();
 
-                        if (months.Contains(startMonth))
+                        if (EventManagementProcess.months.Contains(startMonth))
                         {
 
                             Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
                             int startDay = Convert.ToByte(Console.ReadLine());
 
-                            if (monthsWith31Days.Contains(startMonth) && startDay >= 1 && startDay <= 31 ||
-                                monthsWith30Days.Contains(startMonth) && startDay >= 1 && startDay <= 30 ||
-                                monthsWith28Days.Contains(startMonth) && startDay >= 1 && startDay <= 28)
-                            {
+                            if(EventManagementProcess.CheckStartDate(startMonth, startDay))
+                                {
 
                                 Console.Write("Enter the YEAR (YYYY) which the EVENT will begin: ");
                                 int startYear = Convert.ToInt32(Console.ReadLine());
@@ -246,15 +227,13 @@ namespace EventsManagementSystem
                                 string endMonth = Console.ReadLine().ToUpper();
 
 
-                                if (months.Contains(endMonth))
+                                if (EventManagementProcess.months.Contains(endMonth))
                                 {
 
                                     Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
                                     int endDay = Convert.ToByte(Console.ReadLine());
 
-                                    if (monthsWith31Days.Contains(endMonth) && endDay >= 1 && endDay <= 31 ||
-                                        monthsWith30Days.Contains(endMonth) && endDay >= 1 && endDay <= 30 ||
-                                        monthsWith28Days.Contains(endMonth) && endDay >= 1 && endDay <= 28)
+                                    if (EventManagementProcess.CheckEndDate(endMonth, endDay))
                                     {
                                         Console.Write("Enter the YEAR (YYYY) which the EVENT will end: ");
                                         int endYear = Convert.ToInt32(Console.ReadLine());
