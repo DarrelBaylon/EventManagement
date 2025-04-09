@@ -554,16 +554,13 @@ namespace EventsManagementSystem
                         int index = selectedIndex - 1;
                         string selectedEvent = EventManagementProcess.eventList[index];
 
-                        Console.Write("Enter the Username which CREATED this EVENT: ");
-                        string username = Console.ReadLine();
-
-                        if (EventManagementProcess.EventCompleter(selectedEvent, username))
+                        if (EventManagementProcess.EventCompleter(selectedEvent))
                         {
                             Console.WriteLine("EVENT successfully marked as COMPLETED.");
                         }
                         else
                         {
-                            Console.WriteLine($"THE USER: [{username}] DID NOT CREATE THE EVENT.");
+                            Console.WriteLine("FAILED to complete the event. Please try again.");
                         }
                     }
                     else
@@ -572,6 +569,7 @@ namespace EventsManagementSystem
                     }
                 }
             }
+
             static void ViewHistory()
             {
                 Console.WriteLine("--------------------");

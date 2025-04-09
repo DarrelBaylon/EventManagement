@@ -163,15 +163,14 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static bool EventCompleter(string eventName, string currentUsername)
+        public static bool EventCompleter(string eventName)
         {
             int index = eventList.IndexOf(eventName);
 
-            if (index != -1 && eventCreators[index] == currentUsername)
+            if (index != -1)
             {
-                string completedEvent = $"Event Name: {eventList[index]}, Start: {eventStartDates[index]} " +
-                                        $"{eventStartTimes[index]}, End: {eventEndDates[index]} {eventEndTimes[index]}," +
-                                        $" Created by: {eventCreators[index]}";
+                string completedEvent = $"Event Name: {eventList[index]}, Start: {eventStartDates[index]}, {eventStartTimes[index]}, "+
+                                        $"End: {eventEndDates[index]} {eventEndTimes[index]}, Created by: {eventCreators[index]}";
 
                 completedEventsList.Add(completedEvent);
 
@@ -184,6 +183,7 @@ namespace EventManagement_BusinessDataLogic
 
                 return true;
             }
+
             return false;
         }
         public static void ClearAllEvents()
