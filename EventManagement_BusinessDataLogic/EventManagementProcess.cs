@@ -10,6 +10,7 @@ namespace EventManagement_BusinessDataLogic
 {
     public class EventManagementProcess
     {
+
         public static List<string> eventList = new List<string>();
         public static List<string> eventStartDates = new List<string>();
         public static List<string> eventEndDates = new List<string>();
@@ -17,6 +18,7 @@ namespace EventManagement_BusinessDataLogic
         public static List<string> eventEndTimes = new List<string>();
         public static List<string> usersList = new List<string>();
         public static List<string> eventCreators = new List<string>();
+        public static List<string> completedEventsList = new List<string>();
         public static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event",
                                                 "[4] Delete Event", "[5] Logout", "[6] Exit" };
         public static int[] months = new int[] {1,2,3,4,5,6,7,8,9,10,11,12};
@@ -24,13 +26,14 @@ namespace EventManagement_BusinessDataLogic
         static int[] monthsWith30Days = new int[] { 4,6,9,11};
         static int[] monthsWith28Days = new int[] { 2 };
 
-        public static bool UpdateEvent(string updateEventBefore, string currentUsername)
+
+
+        public static bool UpdateEvent(string eventName, string currentUsername)
         {
-            int index = eventList.IndexOf(updateEventBefore);
+            int index = eventList.IndexOf(eventName);
 
             if (index != -1 && eventCreators[index] == currentUsername)
             {
-      
                 eventList.RemoveAt(index);
                 eventStartDates.RemoveAt(index);
                 eventEndDates.RemoveAt(index);
@@ -45,6 +48,7 @@ namespace EventManagement_BusinessDataLogic
 
         public static bool CreateEvent(string eventName, string startDate, string endDate, string startTime,
                            string endTime, string currentUsername)
+
         {
             if (endDate.CompareTo(startDate) < 0)
             {
@@ -71,32 +75,25 @@ namespace EventManagement_BusinessDataLogic
             return true; 
         }
 
-        public static bool DeleteEvent(string deleteEvent, string currentUsername)
+        public static bool DeleteEvent(string eventName, string currentUsername)
         {
-            int index = eventList.IndexOf(deleteEvent);
-            if (eventList.Contains(deleteEvent))
+            int index = eventList.IndexOf(eventName);
+
+            if (index != -1 && eventCreators[index] == currentUsername)
             {
-                if (index != -1)
-                {
-                    if (eventCreators[index] == currentUsername)
-                    {
-                        eventList.RemoveAt(index);
-                        eventStartDates.RemoveAt(index);
-                        eventEndDates.RemoveAt(index);
-                        eventStartTimes.RemoveAt(index);
-                        eventEndTimes.RemoveAt(index);
-                        eventCreators.RemoveAt(index);
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                eventList.RemoveAt(index);
+                eventStartDates.RemoveAt(index);
+                eventEndDates.RemoveAt(index);
+                eventStartTimes.RemoveAt(index);
+                eventEndTimes.RemoveAt(index);
+                eventCreators.RemoveAt(index);
+                return true;
             }
-                return false;
+
+            return false;
         }
-        public static bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, string newEndTime)
+        public static bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, 
+                                                 string newEndTime)
         {
             DateTime newStart = DateTime.Parse($"{newStartDate} {newStartTime}");
             DateTime newEnd = DateTime.Parse($"{newEndDate} {newEndTime}");
@@ -166,6 +163,38 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
+        public static bool EventCompleter(string eventName, string currentUsername)
+        {
+            int index = eventList.IndexOf(eventName);
 
+            if (index != -1 && eventCreators[index] == currentUsername)
+            {
+                string completedEvent = $"Event Name: {eventList[index]}, Start: {eventStartDates[index]} " +
+                                        $"{eventStartTimes[index]}, End: {eventEndDates[index]} {eventEndTimes[index]}," +
+                                        $" Created by: {eventCreators[index]}";
+
+                completedEventsList.Add(completedEvent);
+
+                eventList.RemoveAt(index);
+                eventStartDates.RemoveAt(index);
+                eventEndDates.RemoveAt(index);
+                eventStartTimes.RemoveAt(index);
+                eventEndTimes.RemoveAt(index);
+                eventCreators.RemoveAt(index);
+
+                return true;
+            }
+            return false;
+        }
+        public static void ClearAllEvents()
+        {
+            eventList.Clear();
+            eventStartDates.Clear();
+            eventEndDates.Clear();
+            eventStartTimes.Clear();
+            eventEndTimes.Clear();
+            eventCreators.Clear();
+            completedEventsList.Clear();
+        }
     }
 }
