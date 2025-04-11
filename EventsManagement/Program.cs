@@ -15,8 +15,8 @@ namespace EventsManagementSystem
 {
     internal class Program
     {
-        static string[] choice = new string[] { "[1] Login", "[2] Signup", "[3] Exit"};
-        static string[] adminChoice = new string[] {"[1] View Events" , "[2] View History", "[3] Complete Event", "[4] Logout", 
+        static string[] choice = new string[] { "[1] Login", "[2] Signup", "[3] Exit" };
+        static string[] adminChoice = new string[] {"[1] View Events" , "[2] View History", "[3] Complete Event", "[4] Logout",
                                                     "[5] Exit"};
         static string currentUsername;
 
@@ -48,6 +48,7 @@ namespace EventsManagementSystem
 
                     case 3:
                         Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
+                        Environment.Exit(0);
                         break;
 
                     default:
@@ -99,6 +100,7 @@ namespace EventsManagementSystem
 
                     case 6:
                         Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
+                        Environment.Exit(0);
                         break;
 
                     //for error handling
@@ -142,6 +144,7 @@ namespace EventsManagementSystem
 
                     case 5:
                         Console.WriteLine("THANK YOU FOR USING OUR SYSTEM!");
+                        Environment.Exit(0);
                         break;
 
                     default:
@@ -152,19 +155,30 @@ namespace EventsManagementSystem
             }
             static void ViewEvent()
             {
-                if (EventManagementProcess.eventList.Count() != 0)
+                if (EventManagementProcess.eventList.Count != 0)
                 {
-
                     Console.WriteLine("--------------------");
-                    Console.WriteLine("THESE ARE THE EVENTS");
+                    Console.WriteLine("THESE ARE THE EVENTS:");
+
                     for (int i = 0; i < EventManagementProcess.eventList.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1}. {EventManagementProcess.eventList[i]}");
+                        string eventName = EventManagementProcess.eventList[i];
+                        string creatorName = "Unknown";
+
+                        foreach (var account in EventManagementProcess.Accounts)
+                        {
+                            if (account.CreatedEvents.Contains(eventName))
+                            {
+                                creatorName = account.Username;
+                            }
+                        }
+
+                        Console.WriteLine($"{i + 1}. {eventName}");
                         Console.WriteLine($" Start: {EventManagementProcess.eventStartDates[i]} " +
                                           $"{EventManagementProcess.eventStartTimes[i]}");
                         Console.WriteLine($" End: {EventManagementProcess.eventEndDates[i]} " +
                                           $"{EventManagementProcess.eventEndTimes[i]}");
-                        Console.WriteLine($" Creator: {EventManagementProcess.eventCreators[i]}");
+                        Console.WriteLine($" Creator: {creatorName}");
                         Console.WriteLine("--------------------");
                     }
                 }
@@ -222,13 +236,13 @@ namespace EventsManagementSystem
 
                                         Console.Write("Enter the TIME 24HR Format (HH:MM) which the EVENT will end: ");
                                         string endTime = Console.ReadLine();
-  
-                                       
-                                        if (EventManagementProcess.CreateEvent(eventName, startDate, endDate, startTime, 
+
+
+                                        if (EventManagementProcess.CreateEvent(eventName, startDate, endDate, startTime,
                                             endTime, currentUsername))
                                         {
 
-                                            
+
                                             Console.WriteLine($"SUCCESSFULLY CREATED THE EVENT: [{eventName}] by " +
                                                               $"[{currentUsername}]");
                                         }
@@ -277,7 +291,7 @@ namespace EventsManagementSystem
                     Console.Write("Enter the NUMBER of the EVENT that you would like to UPDATE: ");
                     string input = Console.ReadLine();
 
-                    if (int.TryParse(input, out int selectedIndex) && selectedIndex >= 1 && selectedIndex <= EventManagementProcess.eventList.Count)
+                    if (EventManagementProcess.ValidEventSelector(input, out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
                         string selectedEvent = EventManagementProcess.eventList[index];
@@ -386,7 +400,6 @@ namespace EventsManagementSystem
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO UPDATE!");
                 }
-
                 DisplayEvents();
             }
             static void DeleteEvent()
@@ -400,8 +413,7 @@ namespace EventsManagementSystem
                     Console.Write("Enter the NUMBER of the Event that you would like to DELETE: ");
                     string input = Console.ReadLine();
 
-                    if (int.TryParse(input, out int selectedIndex) && selectedIndex >= 1 && selectedIndex <= 
-                        EventManagementProcess.eventList.Count)
+                    if (EventManagementProcess.ValidEventSelector(input,out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
                         string selectedEvent = EventManagementProcess.eventList[index];
@@ -423,7 +435,7 @@ namespace EventsManagementSystem
                 else
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO DELETE!");
-                  
+
                 }
                 DisplayEvents();
             }
@@ -454,15 +466,21 @@ namespace EventsManagementSystem
 
                                 if (email != "")
                                 {
-                                    string users = $"{username},{password},{age},{phoneNumber},{email}";
-
                                     if (EventManagementProcess.DuplicateUser(username, phoneNumber, email))
                                     {
                                         Console.WriteLine("Signup failed: USERNAME, CONTACT NUMBER, or EMAIL already exists!");
                                     }
                                     else
                                     {
-                                        EventManagementProcess.usersList.Add(users);
+                                        EventAccount newUser = new EventAccount
+                                        {
+                                            Username = username,
+                                            Password = password,
+                                            PhoneNumber = phoneNumber,
+                                            Email = email
+                                        };
+
+                                        EventManagementProcess.Accounts.Add(newUser);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
                                     }
                                 }
@@ -504,20 +522,20 @@ namespace EventsManagementSystem
                     {
                         if (currentUsername == "admin" && password == "admin123")
                         {
-                        AdminPage();
+                            AdminPage();
                         }
                         else
                         {
                             if (EventManagementProcess.ValidLogin(currentUsername, password))
                             {
 
-                            Console.WriteLine("Login successful!");
-                            DisplayEvents();
+                                Console.WriteLine("Login successful!");
+                                DisplayEvents();
                             }
                             else
                             {
-                            Console.WriteLine("Invalid USERNAME or PASSWORD!");
-                            LoginPage();
+                                Console.WriteLine("Invalid USERNAME or PASSWORD!");
+                                LoginPage();
                             }
                         }
                     }
@@ -547,14 +565,12 @@ namespace EventsManagementSystem
                     Console.Write("Enter the NUMBER of the EVENT to mark as COMPLETE: ");
                     string input = Console.ReadLine();
 
-                    if (int.TryParse(input, out int selectedIndex) &&
-                        selectedIndex >= 1 &&
-                        selectedIndex <= EventManagementProcess.eventList.Count)
+                    if (EventManagementProcess.ValidEventSelector(input,out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string selectedEvent = EventManagementProcess.eventList[index];
+                        string eventName = EventManagementProcess.eventList[index];
 
-                        if (EventManagementProcess.EventCompleter(selectedEvent))
+                        if (EventManagementProcess.EventCompleter(eventName))
                         {
                             Console.WriteLine("EVENT successfully marked as COMPLETED.");
                         }
@@ -569,24 +585,27 @@ namespace EventsManagementSystem
                     }
                 }
             }
-
             static void ViewHistory()
             {
                 Console.WriteLine("--------------------");
-                if (EventManagementProcess.completedEventsList.Count == 0)
+                if (EventManagementProcess.Accounts.Count == 0)
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
                 }
                 else
                 {
-                    foreach (var completed in EventManagementProcess.completedEventsList)
+                    foreach (var account in EventManagementProcess.Accounts)
                     {
-                        Console.WriteLine("THESE ARE THE COMPLETED EVENTS");
-                        Console.WriteLine(completed);
+                        foreach (var completedEvent in account.CompletedEvents)
+                        {
+                            Console.WriteLine("THESE ARE THE COMPLETED EVENTS");
+                            Console.WriteLine(completedEvent);
+                        }
                     }
                 }
             }
         }
     }
 }
+
 

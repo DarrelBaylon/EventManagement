@@ -16,9 +16,9 @@ namespace EventManagement_BusinessDataLogic
         public static List<string> eventEndDates = new List<string>();
         public static List<string> eventStartTimes = new List<string>();
         public static List<string> eventEndTimes = new List<string>();
-        public static List<string> usersList = new List<string>();
+        public static List<EventAccount> Accounts = new List<EventAccount>();
         public static List<string> eventCreators = new List<string>();
-        public static List<string> completedEventsList = new List<string>();
+
         public static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event",
                                                 "[4] Delete Event", "[5] Logout", "[6] Exit" };
         public static int[] months = new int[] {1,2,3,4,5,6,7,8,9,10,11,12};
@@ -30,66 +30,103 @@ namespace EventManagement_BusinessDataLogic
 
         public static bool UpdateEvent(string eventName, string currentUsername)
         {
-            int index = eventList.IndexOf(eventName);
+            EventAccount account = null;
 
-            if (index != -1 && eventCreators[index] == currentUsername)
+            foreach (EventAccount acc in Accounts)
             {
-                eventList.RemoveAt(index);
-                eventStartDates.RemoveAt(index);
-                eventEndDates.RemoveAt(index);
-                eventStartTimes.RemoveAt(index);
-                eventEndTimes.RemoveAt(index);
-                eventCreators.RemoveAt(index);
-                return true;
+                if (acc.Username == currentUsername)
+                {
+                    account = acc;
+                    break;
+                }
             }
+            if (account == null)
+            {
+                return false;  
+            }
+            if (account.CreatedEvents.Contains(eventName))
+            {
+                int index = eventList.IndexOf(eventName);
 
+                if (index != -1 && eventCreators[index] == currentUsername)
+                {
+                    eventList.RemoveAt(index);
+                    eventStartDates.RemoveAt(index);
+                    eventEndDates.RemoveAt(index);
+                    eventStartTimes.RemoveAt(index);
+                    eventEndTimes.RemoveAt(index);
+                    eventCreators.RemoveAt(index);
+
+                    account.CreatedEvents.Remove(eventName);
+                    account.CreatedEvents.Add(eventName); 
+
+                    return true;
+                }
+            }
             return false;
         }
-
-        public static bool CreateEvent(string eventName, string startDate, string endDate, string startTime,
-                           string endTime, string currentUsername)
-
+        public static bool CreateEvent(string eventName, string startDate, string endDate, string startTime, string endTime, 
+                                       string currentUsername)
         {
-            if (endDate.CompareTo(startDate) < 0)
+            EventAccount account = null;
+
+            foreach (EventAccount acc in Accounts)
+            {
+                if (acc.Username == currentUsername)
+                {
+                    account = acc;
+                    break;
+                }
+            }
+            if (account == null)
+            {
+                return false; 
+            }
+            if (!CheckScheduleConflict(startDate, endDate, startTime, endTime))
             {
                 return false;
             }
-
-            if (startDate == endDate && endTime.CompareTo(startTime) < 0)
-            {
-                return false; 
-            }
-
-            if (!CheckScheduleConflict(startDate, endDate, startTime, endTime))
-            {
-                return false; 
-            }
-
-            eventList.Add(eventName);
-            eventStartDates.Add(startDate);
-            eventEndDates.Add(endDate);
-            eventStartTimes.Add(startTime);
+            account.CreatedEvents.Add(eventName);
+            eventList.Add(eventName); 
+            eventStartDates.Add(startDate); 
+            eventEndDates.Add(endDate); 
+            eventStartTimes.Add(startTime); 
             eventEndTimes.Add(endTime);
             eventCreators.Add(currentUsername);
-
-            return true; 
+            return true;
         }
 
         public static bool DeleteEvent(string eventName, string currentUsername)
         {
-            int index = eventList.IndexOf(eventName);
-
-            if (index != -1 && eventCreators[index] == currentUsername)
+            EventAccount account = null;
+            foreach (EventAccount acc in Accounts)
             {
-                eventList.RemoveAt(index);
-                eventStartDates.RemoveAt(index);
-                eventEndDates.RemoveAt(index);
-                eventStartTimes.RemoveAt(index);
-                eventEndTimes.RemoveAt(index);
-                eventCreators.RemoveAt(index);
-                return true;
+                if (acc.Username == currentUsername)
+                {
+                    account = acc;
+                    break;
+                }
             }
+            if (account == null)
+            {
+                return false;
+            }
+            if (account.CreatedEvents.Contains(eventName))
+            {
+                int index = eventList.IndexOf(eventName);
 
+                if (index != -1 && eventCreators[index] == currentUsername)
+                {
+                    eventList.RemoveAt(index);
+                    eventStartDates.RemoveAt(index);
+                    eventEndDates.RemoveAt(index);
+                    eventStartTimes.RemoveAt(index);
+                    eventEndTimes.RemoveAt(index);
+                    eventCreators.RemoveAt(index);
+                    account.CreatedEvents.Remove(eventName);
+                    return true;
+                }
+            }
             return false;
         }
         public static bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, 
@@ -133,33 +170,19 @@ namespace EventManagement_BusinessDataLogic
         }
         public static bool DuplicateUser(string username, string phoneNumber, string email)
         {
-            foreach (string user in usersList)
+            foreach (EventAccount account in Accounts)
             {
-                string[] userDetails = user.Split(',');
-                string existingUsername = userDetails[0];
-                string existingPhoneNumber = userDetails[3];
-                string existingEmail = userDetails[4];
-
-                if (username == existingUsername || phoneNumber == existingPhoneNumber || email == existingEmail)
-                {
+                if (account.Username == username || account.PhoneNumber == phoneNumber || account.Email == email)
                     return true;
-                }
             }
             return false;
         }
         public static bool ValidLogin(string currentUsername, string password)
         {
-            foreach (string user in usersList)
+            foreach (EventAccount account in Accounts)
             {
-                string[] userDetails = user.Split(',');
-                string existingUsername = userDetails[0];
-                string existingPassword = userDetails[1];
-
-             
-                if (currentUsername == existingUsername && password == existingPassword)
-                {
+                if (account.Username == currentUsername && account.Password == password)
                     return true;
-                }
             }
             return false;
         }
@@ -169,32 +192,41 @@ namespace EventManagement_BusinessDataLogic
 
             if (index != -1)
             {
-                string completedEvent = $"Event Name: {eventList[index]}, Start: {eventStartDates[index]}, {eventStartTimes[index]}, "+
-                                        $"End: {eventEndDates[index]} {eventEndTimes[index]}, Created by: {eventCreators[index]}";
+                string completedEvent = "Event Name: " + eventList[index] +
+                                        ", Start: " + eventStartDates[index] + " " + eventStartTimes[index] +
+                                        ", End: " + eventEndDates[index] + " " + eventEndTimes[index] +
+                                        ", Created by: " + eventCreators[index];
 
-                completedEventsList.Add(completedEvent);
+                foreach (var account in Accounts)
+                {
+                    
+                        account.CompletedEvents.Add(completedEvent);
 
-                eventList.RemoveAt(index);
-                eventStartDates.RemoveAt(index);
-                eventEndDates.RemoveAt(index);
-                eventStartTimes.RemoveAt(index);
-                eventEndTimes.RemoveAt(index);
-                eventCreators.RemoveAt(index);
+                        eventList.RemoveAt(index);
+                        eventStartDates.RemoveAt(index);
+                        eventEndDates.RemoveAt(index);
+                        eventStartTimes.RemoveAt(index);
+                        eventEndTimes.RemoveAt(index);
+                        eventCreators.RemoveAt(index);
 
-                return true;
+                        return true;
+                    
+                }
+                return false;
             }
-
             return false;
         }
         public static void ClearAllEvents()
         {
-            eventList.Clear();
-            eventStartDates.Clear();
-            eventEndDates.Clear();
-            eventStartTimes.Clear();
-            eventEndTimes.Clear();
-            eventCreators.Clear();
-            completedEventsList.Clear();
+            foreach (EventAccount account in Accounts)
+            {
+                account.CreatedEvents.Clear();
+                account.CompletedEvents.Clear();
+            }
         }
+        public static bool ValidEventSelector(string input, out int selectedIndex)
+        {
+            return int.TryParse(input, out selectedIndex) && selectedIndex >= 1 && selectedIndex <= eventList.Count;
+        } 
     }
 }
