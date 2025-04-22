@@ -11,28 +11,32 @@ namespace EventManagement_BusinessDataLogic
     public class EventManagementProcess
     {
 
-        public static List<string> eventList = new List<string>();
-        public static List<string> eventStartDates = new List<string>();
-        public static List<string> eventEndDates = new List<string>();
-        public static List<string> eventStartTimes = new List<string>();
-        public static List<string> eventEndTimes = new List<string>();
-        public static List<EventAccount> Accounts = new List<EventAccount>();
-        public static List<string> eventCreators = new List<string>();
-
-        public static string[] events = new string[] { "[1] Create Event", "[2] View Event", "[3] Update Event",
-                                                "[4] Delete Event", "[5] Logout", "[6] Exit" };
-        public static int[] months = new int[] {1,2,3,4,5,6,7,8,9,10,11,12};
-        static int[] monthsWith31Days = new int[] {1,3,5,7,8,10,12};
-        static int[] monthsWith30Days = new int[] { 4,6,9,11};
-        static int[] monthsWith28Days = new int[] { 2 };
+        List<string> eventList = new List<string>();
+        List<string> eventStartDates = new List<string>();
+        List<string> eventEndDates = new List<string>();
+        List<string> eventStartTimes = new List<string>();
+        List<string> eventEndTimes = new List<string>();
+        public List<EventAccount> accounts = new List<EventAccount>();
+        List<string> eventCreators = new List<string>();
 
 
+        int[] months = new int[] {1,2,3,4,5,6,7,8,9,10,11,12};
+        int[] monthsWith31Days = new int[] {1,3,5,7,8,10,12};
+        int[] monthsWith30Days = new int[] { 4,6,9,11};
+        int[] monthsWith28Days = new int[] { 2 };
 
-        public static bool UpdateEvent(string eventName, string currentUsername)
+        public List<string> EventList { get { return (eventList); } }
+        public List<string> EventStartDates { get { return (eventStartDates); } }
+        public List<string> EventEndDates { get { return (eventEndDates); } }
+        public List<string> EventStartTimes { get { return (eventStartTimes); } }
+        public List<string> EventEndTimes { get { return (eventEndTimes); } }
+        public int[] Months { get { return (int[])months.Clone(); } }
+
+        public bool UpdateEvent(string eventName, string currentUsername)
         {
             EventAccount account = null;
 
-            foreach (EventAccount acc in Accounts)
+            foreach (EventAccount acc in accounts)
             {
                 if (acc.Username == currentUsername)
                 {
@@ -65,12 +69,12 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static bool CreateEvent(string eventName, string startDate, string endDate, string startTime, string endTime, 
+        public bool CreateEvent(string eventName, string startDate, string endDate, string startTime, string endTime, 
                                        string currentUsername)
         {
             EventAccount account = null;
 
-            foreach (EventAccount acc in Accounts)
+            foreach (EventAccount acc in accounts)
             {
                 if (acc.Username == currentUsername)
                 {
@@ -96,10 +100,10 @@ namespace EventManagement_BusinessDataLogic
             return true;
         }
 
-        public static bool DeleteEvent(string eventName, string currentUsername)
+        public bool DeleteEvent(string eventName, string currentUsername)
         {
             EventAccount account = null;
-            foreach (EventAccount acc in Accounts)
+            foreach (EventAccount acc in accounts)
             {
                 if (acc.Username == currentUsername)
                 {
@@ -129,7 +133,7 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, 
+        public  bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, 
                                                  string newEndTime)
         {
             DateTime newStart = DateTime.Parse($"{newStartDate} {newStartTime}");
@@ -148,7 +152,7 @@ namespace EventManagement_BusinessDataLogic
 
             return true;
         }
-        public static bool CheckStartDate(int startMonth, int startDay)
+        public bool CheckStartDate(int startMonth, int startDay)
         {
             if (monthsWith31Days.Contains(startMonth) && startDay >= 1 && startDay <= 31 ||
             monthsWith30Days.Contains(startMonth) && startDay >= 1 && startDay <= 30 ||
@@ -158,7 +162,7 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static bool CheckEndDate(int endMonth, int endDay)
+        public bool CheckEndDate(int endMonth, int endDay)
         {
             if (monthsWith31Days.Contains(endMonth) && endDay >= 1 && endDay <= 31 ||
             monthsWith30Days.Contains(endMonth) && endDay >= 1 && endDay <= 30 ||
@@ -168,25 +172,25 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static bool DuplicateUser(string username, string phoneNumber, string email)
+        public  bool DuplicateUser(string username, string phoneNumber, string email)
         {
-            foreach (EventAccount account in Accounts)
+            foreach (EventAccount account in accounts)
             {
                 if (account.Username == username || account.PhoneNumber == phoneNumber || account.Email == email)
                     return true;
             }
             return false;
         }
-        public static bool ValidLogin(string currentUsername, string password)
+        public  bool ValidLogin(string currentUsername, string password)
         {
-            foreach (EventAccount account in Accounts)
+            foreach (EventAccount account in accounts)
             {
                 if (account.Username == currentUsername && account.Password == password)
                     return true;
             }
             return false;
         }
-        public static bool EventCompleter(string eventName)
+        public  bool EventCompleter(string eventName)
         {
             int index = eventList.IndexOf(eventName);
 
@@ -197,7 +201,7 @@ namespace EventManagement_BusinessDataLogic
                                         ", End: " + eventEndDates[index] + " " + eventEndTimes[index] +
                                         ", Created by: " + eventCreators[index];
 
-                foreach (var account in Accounts)
+                foreach (var account in accounts)
                 {
                     
                         account.CompletedEvents.Add(completedEvent);
@@ -216,15 +220,15 @@ namespace EventManagement_BusinessDataLogic
             }
             return false;
         }
-        public static void ClearAllEvents()
+        public void ClearAllEvents()
         {
-            foreach (EventAccount account in Accounts)
+            foreach (EventAccount account in accounts)
             {
                 account.CreatedEvents.Clear();
                 account.CompletedEvents.Clear();
             }
         }
-        public static bool ValidEventSelector(string input, out int selectedIndex)
+        public bool ValidEventSelector(string input, out int selectedIndex)
         {
             return int.TryParse(input, out selectedIndex) && selectedIndex >= 1 && selectedIndex <= eventList.Count;
         } 
