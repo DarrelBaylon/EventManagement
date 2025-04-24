@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EventManagement_BusinessDataLogic
 {
-    public class EventAccount
+    public class EventAccounts
     {
         public string Username { get; set; }
         public string Password { get; set; }

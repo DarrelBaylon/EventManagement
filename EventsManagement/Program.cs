@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using EventManagement_BusinessDataLogic;
+using EventManagementDataService;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -22,7 +23,8 @@ namespace EventsManagementSystem
                                                 "[4] Delete Event", "[5] Logout", "[6] Exit" };
         static string currentUsername;
 
-        static EventManagementProcess eventManagementProcess = new EventManagementProcess();
+        static EventManagementService eventManagementProcess = new EventManagementService();
+        static EventDataService eventDataService = new EventDataService();  
         static void Main(string[] args)
 
         {
@@ -159,17 +161,17 @@ namespace EventsManagementSystem
             }
             static void ViewEvent()
             {
-                if (eventManagementProcess.EventList.Count != 0)
+                if (eventDataService.EventList.Count != 0)
                 {
                     Console.WriteLine("--------------------");
                     Console.WriteLine("THESE ARE THE EVENTS:");
 
-                    for (int i = 0; i < eventManagementProcess.EventList.Count; i++)
+                    for (int i = 0; i < eventDataService.EventList.Count; i++)
                     {
-                        string eventName = eventManagementProcess.EventList[i];
+                        string eventName = eventDataService.EventList[i];
                         string creatorName = "Unknown";
 
-                        foreach (var account in eventManagementProcess.accounts)
+                        foreach (var account in eventDataService.accounts)
                         {
                             if (account.CreatedEvents.Contains(eventName))
                             {
@@ -178,10 +180,10 @@ namespace EventsManagementSystem
                         }
 
                         Console.WriteLine($"{i + 1}. {eventName}");
-                        Console.WriteLine($" Start: {eventManagementProcess.EventStartDates[i]} " +
-                                          $"{eventManagementProcess.EventStartTimes[i]}");
-                        Console.WriteLine($" End: {eventManagementProcess.EventEndDates[i]} " +
-                                          $"{eventManagementProcess.EventEndTimes[i]}");
+                        Console.WriteLine($" Start: {eventDataService.EventStartDates[i]} " +
+                                          $"{eventDataService.EventStartTimes[i]}");
+                        Console.WriteLine($" End: {eventDataService.EventEndDates[i]} " +
+                                          $"{eventDataService.EventEndTimes[i]}");
                         Console.WriteLine($" Creator: {creatorName}");
                         Console.WriteLine("--------------------");
                     }
@@ -203,7 +205,7 @@ namespace EventsManagementSystem
                     Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
                     int startMonth = Convert.ToInt16(Console.ReadLine());
 
-                    if (eventManagementProcess.Months.Contains(startMonth))
+                    if (eventDataService.Months.Contains(startMonth))
                     {
 
                         Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
@@ -220,7 +222,7 @@ namespace EventsManagementSystem
                             Console.Write("Enter the MONTH (MM) which the EVENT will end: ");
                             int endMonth = Convert.ToInt16(Console.ReadLine());
 
-                            if (eventManagementProcess.Months.Contains(endMonth))
+                            if (eventDataService.Months.Contains(endMonth))
                             {
 
                                 Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
@@ -289,7 +291,7 @@ namespace EventsManagementSystem
             }
             static void UpdateEvent()
             {
-                if (eventManagementProcess.EventList.Count != 0)
+                if (eventDataService.EventList.Count != 0)
                 {
                     ViewEvent();
                     Console.Write("Enter the NUMBER of the EVENT that you would like to UPDATE: ");
@@ -298,7 +300,7 @@ namespace EventsManagementSystem
                     if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string selectedEvent = eventManagementProcess.EventList[index];
+                        string selectedEvent = eventDataService.EventList[index];
 
                         if (eventManagementProcess.UpdateEvent(selectedEvent, currentUsername))
                         {
@@ -310,7 +312,7 @@ namespace EventsManagementSystem
                                 Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
                                 int startMonth = Convert.ToInt16(Console.ReadLine());
 
-                                if (eventManagementProcess.Months.Contains(startMonth))
+                                if (eventDataService.Months.Contains(startMonth))
                                 {
                                     Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
                                     int startDay = Convert.ToByte(Console.ReadLine());
@@ -324,7 +326,7 @@ namespace EventsManagementSystem
                                         Console.Write("Enter the MONTH (MM) which the EVENT will end: ");
                                         int endMonth = Convert.ToInt16(Console.ReadLine());
 
-                                        if (eventManagementProcess.Months.Contains(endMonth))
+                                        if (eventDataService.Months.Contains(endMonth))
                                         {
                                             Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
                                             int endDay = Convert.ToByte(Console.ReadLine());
@@ -408,7 +410,7 @@ namespace EventsManagementSystem
             }
             static void DeleteEvent()
             {
-                if (eventManagementProcess.EventList.Count != 0)
+                if (eventDataService.EventList.Count != 0)
                 {
                     Console.WriteLine("--------------------");
                     ViewEvent();
@@ -420,7 +422,7 @@ namespace EventsManagementSystem
                     if (eventManagementProcess.ValidEventSelector(input,out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string selectedEvent = eventManagementProcess.EventList[index];
+                        string selectedEvent = eventDataService.EventList[index];
 
                         if (eventManagementProcess.DeleteEvent(selectedEvent, currentUsername))
                         {
@@ -476,16 +478,12 @@ namespace EventsManagementSystem
                                     }
                                     else
                                     {
-                                        EventAccount newUser = new EventAccount
-                                        {
-                                            Username = username,
-                                            Password = password,
-                                            PhoneNumber = phoneNumber,
-                                            Email = email
-                                        };
-
-                                        eventManagementProcess.accounts.Add(newUser);
+                                        eventDataService.AddNewAccount(username, password, phoneNumber, email);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
+                                        foreach (var acc in eventDataService.accounts)
+                                        {
+                                            Console.WriteLine($"Username: {acc.Username}, Email: {acc.Email}");
+                                        }
                                     }
                                 }
                                 else
@@ -530,7 +528,7 @@ namespace EventsManagementSystem
                         }
                         else
                         {
-                            if (eventManagementProcess.ValidLogin(currentUsername, password))
+                            if (eventManagementProcess.ValidLogIn(currentUsername, password))
                             {
 
                                 Console.WriteLine("Login successful!");
@@ -557,7 +555,7 @@ namespace EventsManagementSystem
             }
             static void CompleteEvent()
             {
-                if (eventManagementProcess.EventList.Count == 0)
+                if (eventDataService.EventList.Count == 0)
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS!");
                     AdminPage();
@@ -572,7 +570,7 @@ namespace EventsManagementSystem
                     if (eventManagementProcess.ValidEventSelector(input,out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string eventName = eventManagementProcess.EventList[index];
+                        string eventName = eventDataService.EventList[index];
 
                         if (eventManagementProcess.EventCompleter(eventName))
                         {
@@ -592,7 +590,7 @@ namespace EventsManagementSystem
             static void ViewHistory()
             {
                 Console.WriteLine("--------------------");
-                foreach (var account in eventManagementProcess.accounts)
+                foreach (var account in eventDataService.accounts)
                 {
                     foreach (var completedEvent in account.CompletedEvents)
                     { 
