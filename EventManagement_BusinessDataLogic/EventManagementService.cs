@@ -18,7 +18,7 @@ namespace EventManagement_BusinessDataLogic
 
         EventDataService eventsDataService = new EventDataService();
 
-        public bool UpdateEvent(string eventName, string currentUsername)
+        public void UpdateEvent(string eventName, string currentUsername)
         {
             EventAccount account = eventsDataService.GetAccount(currentUsername);
 
@@ -26,11 +26,20 @@ namespace EventManagement_BusinessDataLogic
             {
                 if (account.CreatedEvents.Contains(eventName))
                 {
-                    eventsDataService.RemoveEvent(eventName);
+                    int index = eventsDataService.GetEventIndex(eventName);
+
+                    if (index != -1)
+                    {
+                        string creator = eventsDataService.GetEventCreator(index);
+
+                        if (creator == currentUsername)
+                        {
+                            eventsDataService.RemoveEvent(eventName);
+                            account.CreatedEvents.Remove(eventName);
+                        }
+                    }
                 }
             }
-
-            return false;
         }
         public bool CreateEvent(string eventName, string startDate, string endDate, string startTime, string endTime, string currentUsername)
         {
@@ -74,16 +83,16 @@ namespace EventManagement_BusinessDataLogic
 
             return false;
         }
-        public bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, 
-                                                 string newEndTime)
+        public bool CheckScheduleConflict(string newStartDate, string newEndDate, string newStartTime, string newEndTime)
         {
-            DateTime newStart = DateTime.Parse($"{newStartDate} {newStartTime}");
-            DateTime newEnd = DateTime.Parse($"{newEndDate} {newEndTime}");
+            DateTime newStart = DateTime.Parse(newStartDate + " " + newStartTime);
+            DateTime newEnd = DateTime.Parse(newEndDate + " " + newEndTime);
 
-            for (int i = 0; i < eventsDataService.EventList.Count; i++)
+            for (int i = 0; i < eventsDataService.info.Count; i++)
             {
-                DateTime existingStart = DateTime.Parse($"{eventsDataService.EventStartDates[i]} {eventsDataService.EventStartTimes[i]}");
-                DateTime existingEnd = DateTime.Parse($"{eventsDataService.EventEndDates[i]}   {eventsDataService.EventEndTimes[i]}");
+                EventInfo existingEvent = eventsDataService.info[i];
+                DateTime existingStart = DateTime.Parse(existingEvent.StartDate + " " + existingEvent.StartTime);
+                DateTime existingEnd = DateTime.Parse(existingEvent.EndDate + " " + existingEvent.EndTime);
 
                 if (newStart < existingEnd && newEnd > existingStart)
                 {
@@ -123,23 +132,16 @@ namespace EventManagement_BusinessDataLogic
         }
         public bool EventCompleter(string eventName)
         {
+            List<EventInfo> eventList = GetAllEvents();
             int index = eventsDataService.GetEventIndex(eventName);
 
             if (index != -1)
             {
                 string creator = eventsDataService.GetEventCreator(index);
-                string eventDetails = "Event Name: " + eventsDataService.EventList[index] +
-                                      ", Start: " + eventsDataService.EventStartDates[index] + " " + eventsDataService.EventStartTimes[index] +
-                                      ", End: " + eventsDataService.EventEndDates[index] + " " + eventsDataService.EventEndTimes[index] +
-                                      ", Created by: " + creator;
+                string eventDetails = $"Event Name: {eventList[index].Name}, Start: {eventList[index].StartDate} {eventList[index].StartTime}, " +
+                                      $"End: {eventList[index].EndDate} {eventList[index].EndTime}, Created by: {creator}";
 
-                foreach (EventAccount account in eventsDataService.accounts)
-                {
-                    account.CompletedEvents.Add(eventDetails);
-                }
-
-                eventsDataService.RemoveEvent(eventName);
-                return true;
+                return eventsDataService.CompleteEvent(eventName, eventDetails);
             }
 
             return false;
@@ -150,7 +152,27 @@ namespace EventManagement_BusinessDataLogic
         }
         public bool ValidEventSelector(string input, out int selectedIndex)
         {
-            return int.TryParse(input, out selectedIndex) && selectedIndex >= 1 && selectedIndex <= eventsDataService.EventList.Count;
-        } 
+            if (int.TryParse(input, out selectedIndex) && selectedIndex >= 1 && selectedIndex <= eventsDataService.info.Count)
+            {
+                return true;
+            }
+            else
+            {
+                selectedIndex = -1; 
+                return false;
+            }
+        }
+        public void RegisterAccounts(string username, string password, string email, string phoneNumber)
+        {
+            eventsDataService.AddNewAccount(username, password, phoneNumber, email);
+        }
+        public List<EventInfo> GetAllEvents()
+        {
+            return eventsDataService.info;
+        }
+        public List<EventAccount> GetCompletedEvents()
+        {
+            return eventsDataService.accounts;
+        }
     }
 }

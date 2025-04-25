@@ -9,45 +9,32 @@ namespace EventManagementDataService
 {
     public class EventDataService
     {
-        List<string> eventList = new List<string>();
-        List<string> eventStartDates = new List<string>();
-        List<string> eventEndDates = new List<string>();
-        List<string> eventStartTimes = new List<string>();
-        List<string> eventEndTimes = new List<string>();
-        public List  <EventAccount> accounts = new List<EventAccount>();
-        List<string> eventCreators = new List<string>();
+        public List<EventAccount> accounts = new List<EventAccount>();
+        public List<EventInfo> info = new List<EventInfo>();
+        
         int[] months = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
-        public List<string> EventList { get { return (eventList); } }
-        public List<string> EventStartDates { get { return (eventStartDates); } }
-        public List<string> EventEndDates { get { return (eventEndDates); } }
-        public List<string> EventStartTimes { get { return (eventStartTimes); } }
-        public List<string> EventEndTimes { get { return (eventEndTimes); } }
-        public List<string> EventCreators { get { return (eventCreators); } }
         public int[] Months { get { return (int[])months.Clone(); } }
 
         public void AddEvent(string name, string startDate, string endDate, string startTime, string endTime, string creator)
         {
-            eventList.Add(name);
-            eventStartDates.Add(startDate);
-            eventEndDates.Add(endDate);
-            eventStartTimes.Add(startTime);
-            eventEndTimes.Add(endTime);
-            eventCreators.Add(creator);
+            EventInfo newEvent = new EventInfo();
+            newEvent.Name = name;
+            newEvent.StartDate = startDate;
+            newEvent.EndDate = endDate;
+            newEvent.StartTime = startTime;
+            newEvent.EndTime = endTime;
+            newEvent.Creator = creator;
+
+            info.Add(newEvent);
         }
 
-        public bool RemoveEvent( string eventName)
+        public bool RemoveEvent(string eventName)
         {
-            int index = eventList.IndexOf(eventName);
+            int index = GetEventIndex(eventName);
             if (index == -1) return false;
 
-            eventList.RemoveAt(index);
-            eventStartDates.RemoveAt(index);
-            eventEndDates.RemoveAt(index);
-            eventStartTimes.RemoveAt(index);
-            eventEndTimes.RemoveAt(index);
-            eventCreators.RemoveAt(index);
-
+            info.RemoveAt(index);
             return true;
         }
 
@@ -62,26 +49,22 @@ namespace EventManagementDataService
             }
             return null;
         }
-        public string GetAccounts(string username)
-        {
-            foreach (var acc in accounts)
-            {
-                if (acc.Username == username)
-                {
-                    return acc.Username;
-                }
-            }
-            return null;
-        }
         public int GetEventIndex(string eventName)
         {
-            return eventList.IndexOf(eventName);
+            for (int i = 0; i < info.Count; i++)
+            {
+                if (info[i].Name == eventName)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
         public string GetEventCreator(int index)
         {
-            if (index >= 0 && index < EventCreators.Count)
+            if (index >= 0 && index < info.Count)
             {
-                return eventCreators[index];
+                return info[index].Creator;
             }
             return null;
         }
@@ -129,5 +112,23 @@ namespace EventManagementDataService
             }
             return false;
         }
+        public bool CompleteEvent(string eventName, string eventDetails)
+        {
+            int index = GetEventIndex(eventName);
+
+            if (index != -1)
+            {
+                foreach (EventAccount account in accounts)
+                {
+                    account.CompletedEvents.Add(eventDetails);
+                }
+
+                RemoveEvent(eventName);
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

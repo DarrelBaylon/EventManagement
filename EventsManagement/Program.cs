@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using EventCommon;
 using EventManagement_BusinessDataLogic;
 using EventManagementDataService;
 using static System.Net.Mime.MediaTypeNames;
@@ -25,6 +26,7 @@ namespace EventsManagementSystem
 
         static EventManagementService eventManagementProcess = new EventManagementService();
         static EventDataService eventDataService = new EventDataService();  
+
         static void Main(string[] args)
 
         {
@@ -161,30 +163,21 @@ namespace EventsManagementSystem
             }
             static void ViewEvent()
             {
-                if (eventDataService.EventList.Count != 0)
+                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
+
+                if (eventList.Count != 0)
                 {
                     Console.WriteLine("--------------------");
                     Console.WriteLine("THESE ARE THE EVENTS:");
 
-                    for (int i = 0; i < eventDataService.EventList.Count; i++)
+                    for (int i = 0; i < eventList.Count; i++)
                     {
-                        string eventName = eventDataService.EventList[i];
-                        string creatorName = "Unknown";
+                        EventInfo currentEvent = eventList[i];
 
-                        foreach (var account in eventDataService.accounts)
-                        {
-                            if (account.CreatedEvents.Contains(eventName))
-                            {
-                                creatorName = account.Username;
-                            }
-                        }
-
-                        Console.WriteLine($"{i + 1}. {eventName}");
-                        Console.WriteLine($" Start: {eventDataService.EventStartDates[i]} " +
-                                          $"{eventDataService.EventStartTimes[i]}");
-                        Console.WriteLine($" End: {eventDataService.EventEndDates[i]} " +
-                                          $"{eventDataService.EventEndTimes[i]}");
-                        Console.WriteLine($" Creator: {creatorName}");
+                        Console.WriteLine((i + 1) + ". " + currentEvent.Name);
+                        Console.WriteLine(" Start: " + currentEvent.StartDate + " " + currentEvent.StartTime);
+                        Console.WriteLine(" End: " + currentEvent.EndDate + " " + currentEvent.EndTime);
+                        Console.WriteLine(" Creator: " + currentEvent.Creator);
                         Console.WriteLine("--------------------");
                     }
                 }
@@ -291,7 +284,9 @@ namespace EventsManagementSystem
             }
             static void UpdateEvent()
             {
-                if (eventDataService.EventList.Count != 0)
+                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
+
+                if (eventList.Count != 0)
                 {
                     ViewEvent();
                     Console.Write("Enter the NUMBER of the EVENT that you would like to UPDATE: ");
@@ -300,101 +295,108 @@ namespace EventsManagementSystem
                     if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string selectedEvent = eventDataService.EventList[index];
 
-                        if (eventManagementProcess.UpdateEvent(selectedEvent, currentUsername))
+                        if (index >= 0 && index < eventList.Count)
                         {
-                            Console.Write("Enter the NEW Name for your EVENT: ");
-                            string eventName = Console.ReadLine();
+                            string selectedEvent = eventList[index].Name;
 
-                            if (eventName != null)
+                            eventManagementProcess.UpdateEvent(selectedEvent, currentUsername);
+
+                            if (eventDataService.GetEventIndex(selectedEvent) == -1)
                             {
-                                Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
-                                int startMonth = Convert.ToInt16(Console.ReadLine());
+                                Console.Write("Enter the NEW Name for your EVENT: ");
+                                string eventName = Console.ReadLine();
 
-                                if (eventDataService.Months.Contains(startMonth))
+                                if (!string.IsNullOrWhiteSpace(eventName))
                                 {
-                                    Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
-                                    int startDay = Convert.ToByte(Console.ReadLine());
+                                    Console.Write("Enter the MONTH (MM) which the EVENT will begin: ");
+                                    int startMonth = Convert.ToInt16(Console.ReadLine());
 
-                                    if (eventManagementProcess.CheckStartDate(startMonth, startDay))
+                                    if (eventDataService.Months.Contains(startMonth))
                                     {
-                                        Console.Write("Enter the YEAR (YYYY) which the EVENT will begin: ");
-                                        int startYear = Convert.ToInt32(Console.ReadLine());
-                                        string startDate = $"{startMonth}-{startDay}-{startYear}";
+                                        Console.Write("Enter the DAY (DD) of the Month which the EVENT will begin: ");
+                                        int startDay = Convert.ToByte(Console.ReadLine());
 
-                                        Console.Write("Enter the MONTH (MM) which the EVENT will end: ");
-                                        int endMonth = Convert.ToInt16(Console.ReadLine());
-
-                                        if (eventDataService.Months.Contains(endMonth))
+                                        if (eventManagementProcess.CheckStartDate(startMonth, startDay))
                                         {
-                                            Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
-                                            int endDay = Convert.ToByte(Console.ReadLine());
+                                            Console.Write("Enter the YEAR (YYYY) which the EVENT will begin: ");
+                                            int startYear = Convert.ToInt32(Console.ReadLine());
+                                            string startDate = $"{startMonth}-{startDay}-{startYear}";
 
-                                            if (eventManagementProcess.CheckEndDate(endMonth, endDay))
+                                            Console.Write("Enter the MONTH (MM) which the EVENT will end: ");
+                                            int endMonth = Convert.ToInt16(Console.ReadLine());
+
+                                            if (eventDataService.Months.Contains(endMonth))
                                             {
-                                                Console.Write("Enter the YEAR (YYYY) which the EVENT will end: ");
-                                                int endYear = Convert.ToInt32(Console.ReadLine());
+                                                Console.Write("Enter the DAY (DD) of the Month which the EVENT will end: ");
+                                                int endDay = Convert.ToByte(Console.ReadLine());
 
-                                                if (endYear - startYear >= 0)
+                                                if (eventManagementProcess.CheckEndDate(endMonth, endDay))
                                                 {
-                                                    string endDate = $"{endMonth}-{endDay}-{endYear}";
+                                                    Console.Write("Enter the YEAR (YYYY) which the EVENT will end: ");
+                                                    int endYear = Convert.ToInt32(Console.ReadLine());
 
-                                                    Console.Write("Enter the TIME 24HR Format (HH:MM) which the EVENT will begin: ");
-                                                    string startTime = Console.ReadLine();
-
-                                                    Console.Write("Enter the TIME 24HR Format (HH:MM) which the EVENT will end: ");
-                                                    string endTime = Console.ReadLine();
-
-                                                    if (eventManagementProcess.CreateEvent(eventName, startDate, endDate,
-                                                        startTime, endTime, currentUsername))
+                                                    if (endYear - startYear >= 0)
                                                     {
-                                                        Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM [{selectedEvent}] TO " +
-                                                                          $"[{eventName}]");
-                                                        Console.WriteLine($"EVENT DURATION: [{startDate} {startTime}] UNTIL " +
-                                                                          $"[{endDate} {endTime}]");
+                                                        string endDate = $"{endMonth}-{endDay}-{endYear}";
+
+                                                        Console.Write("Enter the TIME 24HR Format (HH:MM) which the EVENT will begin: ");
+                                                        string startTime = Console.ReadLine();
+
+                                                        Console.Write("Enter the TIME 24HR Format (HH:MM) which the EVENT will end: ");
+                                                        string endTime = Console.ReadLine();
+
+                                                        if (eventManagementProcess.CreateEvent(eventName, startDate, endDate,
+                                                            startTime, endTime, currentUsername))
+                                                        {
+                                                            Console.WriteLine($"SUCCESSFULLY UPDATED EVENT FROM [{selectedEvent}] TO [{eventName}]");
+                                                            Console.WriteLine($"EVENT DURATION: [{startDate} {startTime}] UNTIL [{endDate} {endTime}]");
+                                                        }
+                                                        else
+                                                        {
+                                                            Console.WriteLine("FAILED TO UPDATE EVENT! POSSIBLE SCHEDULE CONFLICT OR INVALID INPUT.");
+                                                            Console.WriteLine("PLEASE ENTER THE NEW NAME FOR YOUR EVENT");
+                                                            CreateEvent();
+                                                        }
                                                     }
                                                     else
                                                     {
-                                                        Console.WriteLine("FAILED TO UPDATE EVENT! POSSIBLE SCHEDULE CONFLICT OR " +
-                                                                          "INVALID INPUT.");
-                                                        Console.WriteLine("PLEASE ENTER THE NEW NAME FOR YOUR EVENT");
-                                                        CreateEvent();
+                                                        Console.WriteLine("END YEAR CANNOT BE EARLIER THAN START YEAR!");
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    Console.WriteLine("END YEAR CANNOT BE EARLIER THAN START YEAR!");
+                                                    Console.WriteLine("INVALID END DAY!");
                                                 }
                                             }
                                             else
                                             {
-                                                Console.WriteLine("INVALID END DAY!");
+                                                Console.WriteLine("INVALID END MONTH!");
                                             }
                                         }
                                         else
                                         {
-                                            Console.WriteLine("INVALID END MONTH!");
+                                            Console.WriteLine("INVALID START DAY!");
                                         }
                                     }
                                     else
                                     {
-                                        Console.WriteLine("INVALID START DAY!");
+                                        Console.WriteLine("INVALID START MONTH!");
                                     }
                                 }
                                 else
                                 {
-                                    Console.WriteLine("INVALID START MONTH!");
+                                    Console.WriteLine("EVENT NAME CANNOT BE EMPTY!");
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("EVENT NAME CANNOT BE EMPTY!");
+                                Console.WriteLine($"YOU ARE NOT AUTHORIZED TO UPDATE THE EVENT: [{selectedEvent}]");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"YOU ARE NOT AUTHORIZED TO UPDATE THE EVENT: [{selectedEvent}]");
+                            Console.WriteLine("INVALID INDEX. PLEASE SELECT A VALID EVENT NUMBER.");
                         }
                     }
                     else
@@ -406,11 +408,14 @@ namespace EventsManagementSystem
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO UPDATE!");
                 }
+
                 DisplayEvents();
             }
             static void DeleteEvent()
             {
-                if (eventDataService.EventList.Count != 0)
+                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
+
+                if (eventList.Count != 0)
                 {
                     Console.WriteLine("--------------------");
                     ViewEvent();
@@ -419,30 +424,38 @@ namespace EventsManagementSystem
                     Console.Write("Enter the NUMBER of the Event that you would like to DELETE: ");
                     string input = Console.ReadLine();
 
-                    if (eventManagementProcess.ValidEventSelector(input,out int selectedIndex))
+                    if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string selectedEvent = eventDataService.EventList[index];
 
-                        if (eventManagementProcess.DeleteEvent(selectedEvent, currentUsername))
+                        if (index >= 0 && index < eventList.Count)
                         {
-                            Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{selectedEvent}]");
+                            string selectedEvent = eventList[index].Name;
+
+                            if (eventManagementProcess.DeleteEvent(selectedEvent, currentUsername))
+                            {
+                                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{selectedEvent}]");
+                            }
+                            else
+                            {
+                                Console.WriteLine("YOU ARE NOT AUTHORIZED TO DELETE THIS EVENT!");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("YOU ARE NOT AUTHORIZED TO DELETE THIS EVENT!");
+                            Console.WriteLine("INVALID EVENT NUMBER. Please select a valid number.");
                         }
                     }
                     else
                     {
-                        Console.WriteLine("INVALID NUMBER!");
+                        Console.WriteLine("INVALID INPUT! Please enter a valid event number.");
                     }
                 }
                 else
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO DELETE!");
-
                 }
+
                 DisplayEvents();
             }
             static void Signup()
@@ -478,7 +491,7 @@ namespace EventsManagementSystem
                                     }
                                     else
                                     {
-                                        eventDataService.AddNewAccount(username, password, phoneNumber, email);
+                                        eventManagementProcess.RegisterAccounts(username, password, phoneNumber, email);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
                                         foreach (var acc in eventDataService.accounts)
                                         {
@@ -555,7 +568,9 @@ namespace EventsManagementSystem
             }
             static void CompleteEvent()
             {
-                if (eventDataService.EventList.Count == 0)
+                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
+
+                if (eventList.Count == 0)
                 {
                     Console.WriteLine("THERE ARE CURRENTLY NO EVENTS!");
                     AdminPage();
@@ -567,18 +582,27 @@ namespace EventsManagementSystem
                     Console.Write("Enter the NUMBER of the EVENT to mark as COMPLETE: ");
                     string input = Console.ReadLine();
 
-                    if (eventManagementProcess.ValidEventSelector(input,out int selectedIndex))
+                    if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
                     {
                         int index = selectedIndex - 1;
-                        string eventName = eventDataService.EventList[index];
 
-                        if (eventManagementProcess.EventCompleter(eventName))
+                        if (index >= 0 && index < eventList.Count)
                         {
-                            Console.WriteLine("EVENT successfully marked as COMPLETED.");
+                            string eventName = eventList[index].Name;
+
+                            if (eventManagementProcess.EventCompleter(eventName))
+                            {
+                                Console.WriteLine("EVENT successfully marked as COMPLETED.");
+                                ViewEvent(); 
+                            }
+                            else
+                            {
+                                Console.WriteLine("FAILED to complete the event. Please try again.");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("FAILED to complete the event. Please try again.");
+                            Console.WriteLine("INVALID EVENT NUMBER. Please select a valid number.");
                         }
                     }
                     else
@@ -589,23 +613,28 @@ namespace EventsManagementSystem
             }
             static void ViewHistory()
             {
+                List<EventAccount> getAllEvents = eventManagementProcess.GetCompletedEvents();
                 Console.WriteLine("--------------------");
+
                 foreach (var account in eventDataService.accounts)
                 {
-                    foreach (var completedEvent in account.CompletedEvents)
-                    { 
-                        if (account.CompletedEvents.Count == 0)
+                    if (getAllEvents.Count == 0)
+                    {
+                        Console.WriteLine($"No completed events for account: {account.Username}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Completed events for account: {account.Username}");
+                        foreach (var completedEvent in account.CompletedEvents)
                         {
-                        Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
-                        }
-                        else
-                        { 
-                            Console.WriteLine("THESE ARE THE COMPLETED EVENTS");
-                            Console.WriteLine(completedEvent);
+                            Console.WriteLine(completedEvent); 
                         }
                     }
                 }
-                    
+                if (eventDataService.accounts.All(account => account.CompletedEvents.Count == 0))
+                {
+                    Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
+                }
             }
         }
     }
