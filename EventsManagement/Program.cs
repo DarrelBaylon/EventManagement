@@ -613,28 +613,25 @@ namespace EventsManagementSystem
             }
             static void ViewHistory()
             {
-                List<EventAccount> getAllEvents = eventManagementProcess.GetCompletedEvents();
                 Console.WriteLine("--------------------");
 
-                foreach (var account in eventDataService.accounts)
+                List<EventAccount> accounts = eventManagementProcess.GetCompletedEvents();
+
+                foreach (EventAccount account in accounts)
                 {
-                    if (getAllEvents.Count == 0)
+                    if (account.CompletedEvents.Count > 0)
                     {
-                        Console.WriteLine($"No completed events for account: {account.Username}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Completed events for account: {account.Username}");
-                        foreach (var completedEvent in account.CompletedEvents)
+                        Console.WriteLine("THESE ARE THE COMPLETED EVENTS:");
+                        foreach (string completedEvent in account.CompletedEvents)
                         {
-                            Console.WriteLine(completedEvent); 
+                            Console.WriteLine(completedEvent);
                         }
+                        return;
                     }
                 }
-                if (eventDataService.accounts.All(account => account.CompletedEvents.Count == 0))
-                {
-                    Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
-                }
+
+                Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
+                Console.WriteLine("--------------------");
             }
         }
     }
