@@ -25,7 +25,7 @@ namespace EventsManagementSystem
         static string currentUsername;
 
         static EventManagementService eventManagementProcess = new EventManagementService();
-        static EventDataService eventDataService = new EventDataService();  
+        static InMemoryEventDataService eventDataService = new InMemoryEventDataService();  
 
         static void Main(string[] args)
 
@@ -493,7 +493,7 @@ namespace EventsManagementSystem
                                     {
                                         eventManagementProcess.RegisterAccounts(username, password, phoneNumber, email);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
-                                        foreach (var acc in eventDataService.accounts)
+                                        foreach (var acc in eventDataService.Accounts)
                                         {
                                             Console.WriteLine($"Username: {acc.Username}, Email: {acc.Email}");
                                         }
