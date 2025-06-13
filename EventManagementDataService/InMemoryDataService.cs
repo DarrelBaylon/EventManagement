@@ -1,17 +1,16 @@
 ﻿using EventCommon;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace EventManagementDataService
 {
-    public class InMemoryEventDataService : IEventDataService
+    public class InMemoryEventDataService
     {
-        public List<EventAccount> Accounts { get; } = new List<EventAccount>();
-        public List<EventInfo> Events { get; } = new List<EventInfo>();
-
+        private List<EventAccount> accounts = new List<EventAccount>();
+        private List<EventInfo> info = new List<EventInfo>();
         private int[] months = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-        public int[] Months => (int[])months.Clone();
+
+        public int[] Months { get { return (int[])months.Clone(); } }
 
         public void AddEvent(string name, string startDate, string endDate, string startTime, string endTime, string creator)
         {
@@ -24,8 +23,7 @@ namespace EventManagementDataService
                 EndTime = endTime,
                 Creator = creator
             };
-
-            Events.Add(newEvent);
+            info.Add(newEvent);
         }
 
         public bool RemoveEvent(string eventName)
@@ -33,28 +31,46 @@ namespace EventManagementDataService
             int index = GetEventIndex(eventName);
             if (index == -1) return false;
 
-            Events.RemoveAt(index);
+            info.RemoveAt(index);
             return true;
         }
 
         public EventAccount GetAccount(string username)
         {
-            return Accounts.FirstOrDefault(acc => acc.Username == username);
+            foreach (var acc in accounts)
+            {
+                if (acc.Username == username)
+                {
+                    return acc;
+                }
+            }
+            return null;
         }
 
         public int GetEventIndex(string eventName)
         {
-            return Events.FindIndex(e => e.Name == eventName);
+            for (int i = 0; i < info.Count; i++)
+            {
+                if (info[i].Name == eventName)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         public string GetEventCreator(int index)
         {
-            return index >= 0 && index < Events.Count ? Events[index].Creator : null;
+            if (index >= 0 && index < info.Count)
+            {
+                return info[index].Creator;
+            }
+            return null;
         }
 
         public void ClearUserEvents()
         {
-            foreach (var account in Accounts)
+            foreach (var account in accounts)
             {
                 account.CreatedEvents.Clear();
                 account.CompletedEvents.Clear();
@@ -63,8 +79,14 @@ namespace EventManagementDataService
 
         public bool IsDuplicateUser(string username, string phoneNumber, string email)
         {
-            return Accounts.Any(account =>
-                account.Username == username || account.PhoneNumber == phoneNumber || account.Email == email);
+            foreach (EventAccount account in accounts)
+            {
+                if (account.Username == username || account.PhoneNumber == phoneNumber || account.Email == email)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void AddNewAccount(string username, string password, string phoneNumber, string email)
@@ -76,31 +98,33 @@ namespace EventManagementDataService
                 PhoneNumber = phoneNumber,
                 Email = email
             };
-
-            Accounts.Add(newUser);
-            Console.WriteLine("DEBUG: Current total accounts: " + Accounts.Count);
+            accounts.Add(newUser);
         }
 
         public bool ValidLogin(string currentUsername, string password)
         {
-            return Accounts.Any(acc => acc.Username == currentUsername && acc.Password == password);
+            foreach (var acc in accounts)
+            {
+                if (acc.Username == currentUsername && acc.Password == password)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool CompleteEvent(string eventName, string eventDetails)
         {
             int index = GetEventIndex(eventName);
-
             if (index != -1)
             {
-                foreach (var account in Accounts)
+                foreach (EventAccount account in accounts)
                 {
                     account.CompletedEvents.Add(eventDetails);
                 }
-
                 RemoveEvent(eventName);
                 return true;
             }
-
             return false;
         }
     }

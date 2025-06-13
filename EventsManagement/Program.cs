@@ -25,12 +25,12 @@ namespace EventsManagementSystem
         static string currentUsername;
 
         static EventManagementService eventManagementProcess = new EventManagementService();
-        static InMemoryEventDataService eventDataService = new InMemoryEventDataService();  
+        static EventDataService eventDataService = new EventDataService();
 
         static void Main(string[] args)
 
         {
-            eventManagementProcess.ClearAllEvents();
+            //eventManagementProcess.ClearAllEvents();
             LoginPage();
             static void LoginPage()
             {
@@ -302,7 +302,7 @@ namespace EventsManagementSystem
 
                             eventManagementProcess.UpdateEvent(selectedEvent, currentUsername);
 
-                            if (eventDataService.GetEventIndex(selectedEvent) == -1)
+                            if (eventManagementProcess.GetEventIndex(selectedEvent) == -1)
                             {
                                 Console.Write("Enter the NEW Name for your EVENT: ");
                                 string eventName = Console.ReadLine();
@@ -493,7 +493,7 @@ namespace EventsManagementSystem
                                     {
                                         eventManagementProcess.RegisterAccounts(username, password, phoneNumber, email);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
-                                        foreach (var acc in eventDataService.Accounts)
+                                        foreach (var acc in eventDataService.GetAccounts())
                                         {
                                             Console.WriteLine($"Username: {acc.Username}, Email: {acc.Email}");
                                         }
@@ -593,7 +593,7 @@ namespace EventsManagementSystem
                             if (eventManagementProcess.EventCompleter(eventName))
                             {
                                 Console.WriteLine("EVENT successfully marked as COMPLETED.");
-                                ViewEvent(); 
+                                ViewEvent();
                             }
                             else
                             {
@@ -615,6 +615,28 @@ namespace EventsManagementSystem
             {
                 Console.WriteLine("--------------------");
 
+                List<string> completedEvents = eventManagementProcess.GetCompletedEvents();
+
+                if (completedEvents.Count > 0)
+                {
+                    Console.WriteLine("THESE ARE THE COMPLETED EVENTS:");
+                    foreach (string completedEvent in completedEvents)
+                    {
+                        Console.WriteLine(completedEvent);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
+                }
+
+                Console.WriteLine("--------------------");
+            }
+
+            /*static void ViewHistory()
+            {
+                Console.WriteLine("--------------------");
+
                 List<EventAccount> accounts = eventManagementProcess.GetCompletedEvents();
 
                 foreach (EventAccount account in accounts)
@@ -632,9 +654,7 @@ namespace EventsManagementSystem
 
                 Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
                 Console.WriteLine("--------------------");
-            }
+            }*/
         }
     }
 }
-
-
