@@ -97,7 +97,7 @@ namespace EventManagementDataService
             }
         }
 
-        private void WriteEventDataToFile()
+        /*private void WriteEventDataToFile()
         {
             var lines = new string[Events.Count];
 
@@ -106,6 +106,18 @@ namespace EventManagementDataService
                 lines[i] = $"{Events[i].Name}|{Events[i].StartDate}|{Events[i].EndDate}|{Events[i].StartTime}|{Events[i].EndTime}|" +
                            $"{Events[i].Creator}|";
             }
+            File.WriteAllLines(eventFilePath, lines);
+        }*/
+
+        private void WriteEventDataToFile()
+        {
+            var lines = new List<string>();
+
+            foreach (var e in Events)
+            {
+                lines.Add($"{e.Name}|{e.StartDate}|{e.StartTime}|{e.EndDate}|{e.EndTime}|{e.Creator}");
+            }
+
             File.WriteAllLines(eventFilePath, lines);
         }
 
@@ -146,7 +158,7 @@ namespace EventManagementDataService
 
         public void AddAccount(EventAccount eventAccount)
         {
-            var newLine = $"{eventAccount.Username}|{eventAccount.Password}|{eventAccount.PhoneNumber}|{eventAccount.Email}\n";
+            var newLine = $"{eventAccount.Username}|{eventAccount.Password}|{eventAccount.PhoneNumber}|{eventAccount.Email}";
 
             File.AppendAllText(accountFilePath, newLine);
         }
@@ -154,9 +166,9 @@ namespace EventManagementDataService
         public void AddEvent(EventInfo eventInfo)
         {
             var newLine = $"{eventInfo.Name}|{eventInfo.StartDate}|{eventInfo.StartTime}|{eventInfo.EndDate}|{eventInfo.EndTime}|" +
-                          $"{eventInfo.Creator}\n";
+                          $"{eventInfo.Creator}";
 
-            File.AppendAllText(eventFilePath, newLine);
+            File.AppendAllText(eventFilePath, newLine + Environment.NewLine);
         }
 
         public void AddCompletedEvent(EventAccount eventAccount)
@@ -166,37 +178,34 @@ namespace EventManagementDataService
         }
         public void UpdateEvent(EventInfo eventInfo)
         {
-            //RemoveEvent(eventInfo);
-            int index = FindIndex(eventInfo);
-
-            Events[index].Name = eventInfo.Name;
-            Events[index].StartDate = eventInfo.StartDate;
-            Events[index].EndDate = eventInfo.EndDate;
-            Events[index].StartTime = eventInfo.StartTime;
-            Events[index].EndTime = eventInfo.EndTime;
-            Events[index].Creator = eventInfo.Creator;
-            
+            RemoveEvent(eventInfo);
+            Events.Add(eventInfo);
             WriteEventDataToFile();
         }
-        public void RemoveEvent(EventInfo eventInfo)
+        public bool RemoveEvent(EventInfo eventInfo)
         {
             int index = -1;
+
             for (int i = 0; i < Events.Count; i++)
             {
-                if (Events[i].Name == eventInfo.Name)
+                if (Events[i].Name == eventInfo.Name &&
+                    Events[i].StartDate == eventInfo.StartDate &&
+                    Events[i].StartTime == eventInfo.StartTime &&
+                    Events[i].Creator == eventInfo.Creator)
                 {
                     index = i;
+                    break;
                 }
             }
-            if(index!= -1)
+
+            if (index != -1)
             {
                 Events.RemoveAt(index);
-            }
-            else
-            {
-                Console.WriteLine("Event Not Found");
-            }
                 WriteEventDataToFile();
+                return true;
+            }
+
+            return false;
         }
     }
 }

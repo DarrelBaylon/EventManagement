@@ -50,6 +50,7 @@ namespace EventManagementDataService
         public void UpdateEvent(EventInfo eventInfo)
         {
             textFileDataService.UpdateEvent(eventInfo);
+            info.Remove(eventInfo);
         }
 
         public void RemoveEvent(EventInfo eventInfo)
@@ -57,17 +58,25 @@ namespace EventManagementDataService
             textFileDataService.RemoveEvent(eventInfo);
             info.Remove(eventInfo); 
         }
-       // public int GetEventIndex(string eventName)
+        public string GetEventCreator(int index)
+        {
+            if (index >= 0 && index < GetEvents().Count)
+            {
+                return GetEvents()[index].Creator;
+            }
+            return null;
+        }
+        // public int GetEventIndex(string eventName)
         //{
-            //for (int i = 0; i < info.Count; i++)
-            //{
-                //if (info[i].Name == eventName)
-                //{
-                //    return textFileDataService.FindIndex(info[i]);
-                //}
-            //}
-           // return -1;
-       // }
+        //for (int i = 0; i < info.Count; i++)
+        //{
+        //if (info[i].Name == eventName)
+        //{
+        //    return textFileDataService.FindIndex(info[i]);
+        //}
+        //}
+        // return -1;
+        // }
         public bool CompleteEvent(string eventName, string eventDetails)
         {
             EventAccount eventAccount = new EventAccount

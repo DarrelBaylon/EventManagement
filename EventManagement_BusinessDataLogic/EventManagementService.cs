@@ -17,9 +17,9 @@ namespace EventManagement_BusinessDataLogic
         int[] monthsWith28Days = new int[] { 2 };
 
         EventDataService eventsDataService = new EventDataService();
-        
 
-        public void UpdateEvent(string eventName, string currentUsername)
+
+        /*public void UpdateEvent(string eventName, string currentUsername)
         {
             EventAccount account = GetAccount(currentUsername);
 
@@ -48,6 +48,30 @@ namespace EventManagement_BusinessDataLogic
                             DeleteEvent(eventName, currentUsername);
                             account.CreatedEvents.Remove(eventName);
                             eventsDataService.UpdateEvent(eventInfo);
+                        }
+                    }
+                }
+            }
+        }*/
+
+        public void UpdateEvent(string eventName, string currentUsername)
+        {
+            EventAccount account = GetAccount(currentUsername);
+
+            if (account != null)
+            {
+                if (account.CreatedEvents.Contains(eventName))
+                {
+                    int index = GetEventIndex(eventName);
+
+                    if (index != -1)
+                    {
+                        EventInfo eventInfo = GetAllEvents()[index];
+
+                        if (eventInfo.Creator == currentUsername)
+                        {
+                            eventsDataService.UpdateEvent(eventInfo);
+                            account.CreatedEvents.Remove(eventName);
                         }
                     }
                 }
@@ -84,25 +108,74 @@ namespace EventManagement_BusinessDataLogic
             return true;
         }
 
-       
 
-        public bool DeleteEvent(string eventName, string currentUsername)
+
+        /*public bool DeleteEvent(string eventName, string currentUsername)
         {
             EventAccount account = GetAccount(currentUsername);
-
             if (account == null)
             {
                 return false;
             }
 
-            if (account.CreatedEvents.Contains(eventName))
+            // Debug
+            Console.WriteLine("Created Events:");
+            for (int i = 0; i < account.CreatedEvents.Count; i++)
             {
-                int index = GetEventIndex(eventName);
+                Console.WriteLine(account.CreatedEvents[i]);
+            }
 
-                if (index != -1 && GetAllEvents()[index].Creator == currentUsername) 
+            List<EventInfo> allEvents = GetAllEvents();
+            int index = GetEventIndex(eventName);
+
+            if (index != -1)
+            {
+                Console.WriteLine("CurrentUser: " + currentUsername);
+                Console.WriteLine("Event Creator: " + allEvents[index].Creator);
+
+                if (allEvents[index].Creator.Trim().ToLower() == currentUsername.Trim().ToLower())
                 {
-                    eventsDataService.RemoveEvent(GetAllEvents()[index]);
-                    account.CreatedEvents.Remove(eventName);
+                    // Fix: Pass the correct type (EventInfo) to RemoveEvent
+                    eventsDataService.RemoveEvent(allEvents[index]);
+
+                    // Optional: also remove from CreatedEvents
+                    for (int i = 0; i < account.CreatedEvents.Count; i++)
+                    {
+                        if (account.CreatedEvents[i].ToLower() == eventName.ToLower())
+                        {
+                            account.CreatedEvents.RemoveAt(i);
+                            break;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }*/
+
+        public bool DeleteEvent(string eventName, string currentUsername)
+        {
+            EventAccount account = GetAccount(currentUsername);
+            if (account == null)
+            {
+                return false;
+            }
+
+            List<EventInfo> allEvents = GetAllEvents();
+            int index = GetEventIndex(eventName);
+
+            if (index != -1)
+            {
+                EventInfo eventToDelete = allEvents[index];
+
+                Console.WriteLine("CurrentUser: " + currentUsername);
+                Console.WriteLine("Event Creator: " + eventToDelete.Creator);
+
+                if (eventToDelete.Creator.Trim().ToLower() == currentUsername.Trim().ToLower())
+                {
+                    eventsDataService.RemoveEvent(eventToDelete);
                     return true;
                 }
             }
@@ -252,14 +325,15 @@ namespace EventManagement_BusinessDataLogic
         {
             for (int i = 0; i < eventsDataService.info.Count; i++)
             {
-                if (eventsDataService.info[i].Name == eventName)
+                if (eventsDataService.info[i].Name.ToLower() == eventName.ToLower())
                 {
-                    return i; 
+                    return i;
                 }
             }
             return -1;
         }
-        
+       
+
     }
 
     

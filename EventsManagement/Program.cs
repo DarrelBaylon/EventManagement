@@ -432,7 +432,10 @@ namespace EventsManagementSystem
                         {
                             string selectedEvent = eventList[index].Name;
 
-                            if (eventManagementProcess.DeleteEvent(selectedEvent, currentUsername))
+                            // ✅ Only call once
+                            bool result = eventManagementProcess.DeleteEvent(selectedEvent.Trim(), currentUsername.Trim());
+
+                            if (result)
                             {
                                 Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{selectedEvent}]");
                             }
@@ -458,6 +461,56 @@ namespace EventsManagementSystem
 
                 DisplayEvents();
             }
+            /*static void DeleteEvent()
+            {
+
+                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
+
+                if (eventList.Count != 0)
+                {
+                    Console.WriteLine("--------------------");
+                    ViewEvent();
+                    Console.WriteLine("--------------------");
+
+                    Console.Write("Enter the NUMBER of the Event that you would like to DELETE: ");
+                    string input = Console.ReadLine();
+
+                    if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
+                    {
+                        int index = selectedIndex - 1;
+
+                        if (index >= 0 && index < eventList.Count)
+                        {
+                            string selectedEvent = eventList[index].Name;
+                            
+                            bool result = eventManagementProcess.DeleteEvent(selectedEvent, currentUsername);
+
+                            if (eventManagementProcess.DeleteEvent(selectedEvent.Trim(), currentUsername.Trim()))
+                            {
+                                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{selectedEvent}]");
+                            }
+                            else
+                            {
+                                Console.WriteLine("YOU ARE NOT AUTHORIZED TO DELETE THIS EVENT!");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("INVALID EVENT NUMBER. Please select a valid number.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("INVALID INPUT! Please enter a valid event number.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO DELETE!");
+                }
+
+                DisplayEvents();
+            }*/
             static void Signup()
             {
                 Console.Write("Enter Username: ");
