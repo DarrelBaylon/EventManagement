@@ -9,53 +9,56 @@ namespace EventManagementDataService
 {
     public class EventDataService
     {
-        TextFileDataService textFileDataService = new TextFileDataService();
+        IEventDataService eventDataService;
 
-        
+        public EventDataService()
+        {
+            //eventDataService = new TextFileDataService();
+            //eventDataService = new InMemoryDataService();
+            eventDataService = new JsonFileDataService();
+            info = new List<EventInfo>();
+        }
         public List<EventInfo> info;
         private int[] months = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
         public int[] Months { get { return (int[])months.Clone(); } }
 
-        public EventDataService()
-        {
-            info = new List<EventInfo>();
-        }
+       
 
         public List<EventAccount> GetAccounts()
         {
-            return textFileDataService.GetAccounts();
+            return eventDataService.GetAccounts();
         }
         public List<EventInfo> GetEvents()
         {
-            return textFileDataService.GetEvents();
+            return eventDataService.GetEvents();
         }
 
-        public List<string> GetCompletedEvents()
+        public List<String> GetCompletedEvents()
         {
-            return textFileDataService.GetCompletedEvents();
+            return eventDataService.GetCompletedEvents();
         }
 
         public void addAccount(EventAccount eventAccount)
         {
-            textFileDataService.AddAccount(eventAccount);
+            eventDataService.AddAccount(eventAccount);
         }
 
         public void AddEvent(EventInfo eventInfo)
         {
-            textFileDataService.AddEvent(eventInfo);
+            eventDataService.AddEvent(eventInfo);
             info.Add(eventInfo); 
         }
 
         public void UpdateEvent(EventInfo eventInfo)
         {
-            textFileDataService.UpdateEvent(eventInfo);
+            eventDataService.UpdateEvent(eventInfo);
             info.Remove(eventInfo);
         }
 
         public void RemoveEvent(EventInfo eventInfo)
         {
-            textFileDataService.RemoveEvent(eventInfo);
+            eventDataService.RemoveEvent(eventInfo);
             info.Remove(eventInfo); 
         }
         public string GetEventCreator(int index)
@@ -85,7 +88,7 @@ namespace EventManagementDataService
                 CompletedEvents = new List<string> { eventDetails } 
             };
 
-            textFileDataService.AddCompletedEvent(eventAccount);
+            eventDataService.AddCompletedEvent(eventAccount);
             return true;
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EventManagementDataService
 {
-    public class TextFileDataService
+    public class TextFileDataService : IEventDataService
     {
         public List<EventAccount> Accounts { get; private set; } = new List<EventAccount>();
         public List<EventInfo> Events { get; private set; } = new List<EventInfo>();
