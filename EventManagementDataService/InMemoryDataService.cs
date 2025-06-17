@@ -11,9 +11,9 @@ namespace EventManagementDataService
 
     public class InMemoryDataService : IEventDataService
     {
-        private List<EventAccount> accounts = new List<EventAccount>();
-        private List<EventInfo> info = new List<EventInfo>();
-        private List<string> completedEvents = new List<string>();
+        public List<EventAccount> accounts { get; private set; } = new List<EventAccount>();
+        public List<EventInfo> info { get; private set; } = new List<EventInfo>();
+
         public void AddAccount(EventAccount eventAccount)
         {
            
@@ -41,7 +41,13 @@ namespace EventManagementDataService
 
         public List<string> GetCompletedEvents()
         {
-            return completedEvents;
+            for (int i = 0; i < accounts.Count; i++)
+            {
+
+                return accounts[i].CompletedEvents;
+
+            }
+            return new List<string>();
         }
 
         public bool RemoveEvent(EventInfo eventInfo)
@@ -71,6 +77,18 @@ namespace EventManagementDataService
                     return;
                 }
             }
+        }
+
+        public int FindEventIndex(EventInfo eventInfo)
+        {
+            for (int i = 0; i < info.Count; i++)
+            {
+                if (info[i].Name == eventInfo.Name)
+                {
+                    return i;
+                }
+            }
+            return -1; 
         }
     }
 }

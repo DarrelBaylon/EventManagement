@@ -1,9 +1,4 @@
 ﻿using EventCommon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventManagementDataService
 {
@@ -13,9 +8,9 @@ namespace EventManagementDataService
 
         public EventDataService()
         {
-            //eventDataService = new TextFileDataService();
+            eventDataService = new TextFileDataService();
             //eventDataService = new InMemoryDataService();
-            eventDataService = new JsonFileDataService();
+            //eventDataService = new JsonFileDataService();
             info = new List<EventInfo>();
         }
         public List<EventInfo> info;
@@ -69,17 +64,10 @@ namespace EventManagementDataService
             }
             return null;
         }
-        // public int GetEventIndex(string eventName)
-        //{
-        //for (int i = 0; i < info.Count; i++)
-        //{
-        //if (info[i].Name == eventName)
-        //{
-        //    return textFileDataService.FindIndex(info[i]);
-        //}
-        //}
-        // return -1;
-        // }
+        public int GetEventIndex(EventInfo eventInfo)
+        {
+            return eventDataService.FindEventIndex(eventInfo);
+        }
         public bool CompleteEvent(string eventName, string eventDetails)
         {
             EventAccount eventAccount = new EventAccount

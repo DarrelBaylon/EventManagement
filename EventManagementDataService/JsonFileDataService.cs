@@ -10,9 +10,9 @@ namespace EventManagementDataService
 {
     public class JsonFileDataService : IEventDataService
     {
-        static List<EventAccount> eventAccounts = new List<EventAccount>();
-        static List<EventInfo> eventInfos = new List<EventInfo>();
-        static List<string> completedEvents = new List<string>();
+        public List<EventAccount> eventAccounts { get; private set; } = new List<EventAccount>();
+        public List<EventInfo> eventInfos { get; private set; } = new List<EventInfo>();
+        private List<string> completedEvents = new List<string>();
 
         static string accountsJsonFilePath = "accounts.json";
         static string eventsJsonFilePath = "events.json";
@@ -20,9 +20,9 @@ namespace EventManagementDataService
 
         public JsonFileDataService()
         {
-            ReadAccountJsonDataFromFile();
+           ReadAccountJsonDataFromFile();
            ReadEventJsonDataFromFile();
-            ReadCompletedEventJsonDataFromFile();
+           ReadCompletedEventJsonDataFromFile();
         }
 
         private void ReadAccountJsonDataFromFile()
@@ -41,26 +41,68 @@ namespace EventManagementDataService
         }
         private void ReadCompletedEventJsonDataFromFile()
         {
+            if (!File.Exists(completedEventsJsonFilePath))
+            {
+                completedEvents = new List<string>();
+                return;
+            }
+
             string jsonText = File.ReadAllText(completedEventsJsonFilePath);
 
-            completedEvents = JsonSerializer.Deserialize<List<String>>
-                           (jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            if (string.IsNullOrWhiteSpace(jsonText))
+            {
+                completedEvents = new List<string>();
+                return;
+            }
+
+            completedEvents = JsonSerializer.Deserialize<List<string>>(
+                jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
 
+        private void WriteAccountJsonDataToFile()
+        {
+            string jsonString = JsonSerializer.Serialize(eventAccounts, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(accountsJsonFilePath, jsonString);
+        }
+
+        private void WriteEventJsonDataToFile()
+        {
+            string jsonString = JsonSerializer.Serialize(eventInfos, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(eventsJsonFilePath, jsonString);
+        }
+        private void WriteCompletedEventJsonDataToFile()
+        {
+            string jsonString = JsonSerializer.Serialize(eventAccounts, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(completedEventsJsonFilePath, jsonString);
+        }
+
+        public int FindEventIndex(EventInfo eventInfo)
+        {
+            for (int i = 0; i < eventInfos.Count; i++)
+            {
+                if (eventInfos[i].Name == eventInfo.Name)
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
         public void AddAccount(EventAccount eventAccount)
         {
             eventAccounts.Add(eventAccount);
-            //WriteJsonDataToFile();
+            WriteAccountJsonDataToFile();
         }
 
         public void AddCompletedEvent(EventAccount eventAccount)
         {
-            throw new NotImplementedException();
+            eventAccounts.Add(eventAccount);
+            WriteCompletedEventJsonDataToFile();
         }
 
         public void AddEvent(EventInfo eventInfo)
         {
-            throw new NotImplementedException();
+            eventInfos.Add(eventInfo);
+            WriteEventJsonDataToFile();
         }
 
         public List<EventAccount> GetAccounts()
@@ -73,7 +115,7 @@ namespace EventManagementDataService
             for (int i = 0; i < eventAccounts.Count; i++)
             {
 
-                return eventAccounts[i].CompletedEvents;
+                return eventAccounts[i].CompletedEvents;    
 
             }
             return new List<string>();
@@ -103,7 +145,7 @@ namespace EventManagementDataService
             if (index != -1)
             {
                 eventInfos.RemoveAt(index);
-                //WriteEventDataToFile();
+                WriteEventJsonDataToFile();
                 return true;
             }
 
@@ -114,7 +156,7 @@ namespace EventManagementDataService
         {
             RemoveEvent(eventInfo);
             eventInfos.Add(eventInfo);
-            //WriteEventDataToFile();
+            WriteEventJsonDataToFile();
         }
     }
 }

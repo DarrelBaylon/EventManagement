@@ -11,6 +11,7 @@ namespace EventManagementDataService
     {
         public List<EventAccount> Accounts { get; private set; } = new List<EventAccount>();
         public List<EventInfo> Events { get; private set; } = new List<EventInfo>();
+        private List<string> completedEvents = new List<string>();
 
         string accountFilePath = "accounts.txt";
         string eventFilePath = "events.txt";
@@ -71,7 +72,7 @@ namespace EventManagementDataService
                 
             }
         }
-        private void GetCompletedEventDataFromFile()
+        /*private void GetCompletedEventDataFromFile()
         {
             var lines = File.ReadAllLines(completedEventFilePath);
             foreach (var line in lines)
@@ -93,6 +94,61 @@ namespace EventManagementDataService
                     }
 
                     Accounts.Add(account);
+                }
+            }
+        }*/
+
+        private void GetCompletedEventDataFromFile()
+        {
+            if (!File.Exists(completedEventFilePath))
+            {
+                return;
+            }
+
+            var lines = File.ReadAllLines(completedEventFilePath);
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    continue;
+                }
+
+                string[] parts = line.Split('|');
+
+                if (parts.Length < 2)
+                {
+                    continue; 
+                }
+
+                string username = parts[0].Trim();
+
+                
+                EventAccount matchedAccount = null;
+
+                for (int j = 0; j < Accounts.Count; j++)
+                {
+                    if (Accounts[j].Username == username)
+                    {
+                        matchedAccount = Accounts[j];
+                        break;
+                    }
+                }
+
+                if (matchedAccount != null)
+                {
+                    
+                    for (int k = 1; k < parts.Length; k++)
+                    {
+                        string eventName = parts[k].Trim();
+
+                        if (!string.IsNullOrEmpty(eventName))
+                        {
+                            matchedAccount.CompletedEvents.Add(eventName);
+                        }
+                    }
                 }
             }
         }
@@ -121,7 +177,7 @@ namespace EventManagementDataService
             File.WriteAllLines(eventFilePath, lines);
         }
 
-        public int FindIndex(EventInfo eventInfo)
+        public int FindEventIndex(EventInfo eventInfo)
         {
             
             for (int i = 0; i < Events.Count; i++)
@@ -134,7 +190,6 @@ namespace EventManagementDataService
 
             return -1;
         }
-
         public List < EventAccount> GetAccounts()
         {
             return Accounts;

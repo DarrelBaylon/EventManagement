@@ -323,15 +323,10 @@ namespace EventManagement_BusinessDataLogic
         }
         public int GetEventIndex(string eventName)
         {
-            for (int i = 0; i < eventsDataService.info.Count; i++)
-            {
-                if (eventsDataService.info[i].Name.ToLower() == eventName.ToLower())
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return eventsDataService.GetEventIndex(new EventInfo { Name = eventName });
         }
+
+
        
 
     }

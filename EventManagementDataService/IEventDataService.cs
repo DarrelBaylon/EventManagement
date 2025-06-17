@@ -17,5 +17,6 @@ namespace EventManagementDataService
         public bool RemoveEvent(EventInfo eventInfo);
         public void UpdateEvent(EventInfo eventInfo);
         public void AddCompletedEvent(EventAccount eventAccount);
+        public int FindEventIndex(EventInfo eventInfo);
     }
 }
