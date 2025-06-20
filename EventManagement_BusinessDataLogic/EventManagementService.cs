@@ -70,7 +70,7 @@ namespace EventManagement_BusinessDataLogic
 
                         if (eventInfo.Creator == currentUsername)
                         {
-                            eventsDataService.UpdateEvent(eventInfo);
+                            eventsDataService.RemoveEvent(eventInfo);
                             account.CreatedEvents.Remove(eventName);
                         }
                     }

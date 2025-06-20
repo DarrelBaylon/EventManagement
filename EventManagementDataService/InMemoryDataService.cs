@@ -13,20 +13,21 @@ namespace EventManagementDataService
     {
         public List<EventAccount> accounts { get; private set; } = new List<EventAccount>();
         public List<EventInfo> info { get; private set; } = new List<EventInfo>();
+        private List<string> completedEvents = new List<string>();
 
         public void AddAccount(EventAccount eventAccount)
         {
-           
+           accounts.Add(eventAccount);
         }
 
         public void AddCompletedEvent(EventAccount eventAccount)
         {
-            
+           accounts.Add(eventAccount);
         }
 
         public void AddEvent(EventInfo eventInfo)
         {
-            
+            info.Add(eventInfo);
         }
 
         public List<EventAccount> GetAccounts()

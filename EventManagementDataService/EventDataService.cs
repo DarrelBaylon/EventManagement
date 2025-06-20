@@ -9,9 +9,9 @@ namespace EventManagementDataService
         public EventDataService()
         {
             //eventDataService = new TextFileDataService();
-            //eventDataService = new InMemoryDataService();
+            eventDataService = new InMemoryDataService();
             //eventDataService = new JsonFileDataService();
-            eventDataService = new DBDataService();
+            //eventDataService = new DBDataService();
             info = new List<EventInfo>();
         }
         public List<EventInfo> info;

@@ -23,17 +23,50 @@ namespace EventManagementDataService
         }
         public void AddAccount(EventAccount eventAccount)
         {
-            throw new NotImplementedException();
+            var insertStatement = "INSERT INTO EventAccount (AccountName, Password, Email, PhoneNumber) " +
+                                  "VALUES (@AccountName, @Password, @Email, @PhoneNumber)";
+
+            SqlCommand insertCommand = new SqlCommand(insertStatement, sqlConnection);
+            insertCommand.Parameters.AddWithValue("@AccountName", eventAccount.Username);
+            insertCommand.Parameters.AddWithValue("@Password", eventAccount.Password);
+            insertCommand.Parameters.AddWithValue("@Email", eventAccount.Email);
+            insertCommand.Parameters.AddWithValue("@PhoneNumber", eventAccount.PhoneNumber);
+            sqlConnection.Open();
+
+            insertCommand.ExecuteNonQuery();
+            sqlConnection.Close();
         }
+
+
 
         public void AddCompletedEvent(EventAccount eventAccount)
         {
-            throw new NotImplementedException();
+            var insertStatement = "INSERT INTO CompletedEvent (CompletedEvents) VALUES (@CompletedEvents)";
+
+            SqlCommand insertCommand = new SqlCommand(insertStatement, sqlConnection);
+            insertCommand.Parameters.AddWithValue("@CompletedEvents", eventAccount.CompletedEvents);
+            sqlConnection.Open();
+
+            insertCommand.ExecuteNonQuery();
+            sqlConnection.Close();
         }
 
         public void AddEvent(EventInfo eventInfo)
         {
-            throw new NotImplementedException();
+            var insertStatement = "INSERT INTO EventInfo (EventName, EventStartDate, EventStartTime, EventEndDate, EventEndTime, EventCreator) " +
+                                  "VALUES (@Name, @StartDate, @StartTime, @EndDate, @EndTime, @Creator)";
+
+            SqlCommand insertCommand = new SqlCommand(insertStatement, sqlConnection);
+            insertCommand.Parameters.AddWithValue("@Name", eventInfo.Name);
+            insertCommand.Parameters.AddWithValue("@StartDate", eventInfo.StartDate);
+            insertCommand.Parameters.AddWithValue("@StartTime", eventInfo.StartTime);
+            insertCommand.Parameters.AddWithValue("@EndDate", eventInfo.EndDate);
+            insertCommand.Parameters.AddWithValue("@EndTime", eventInfo.EndTime);
+            insertCommand.Parameters.AddWithValue("@Creator", eventInfo.Creator);
+            sqlConnection.Open();
+
+            insertCommand.ExecuteNonQuery();
+            sqlConnection.Close();
         }
 
         public int FindEventIndex(EventInfo eventInfo)
@@ -52,13 +85,21 @@ namespace EventManagementDataService
 
             while (reader.Read()) 
             {
-                eventAccounts.Add(new EventAccount
+                EventAccount eventAccount = new EventAccount();
+                eventAccount.Username = reader["AccountName"].ToString();
+                eventAccount.Password = reader["Password"].ToString();
+                eventAccount.Email = reader["Email"].ToString();
+                eventAccount.PhoneNumber = reader["PhoneNumber"].ToString();
+
+                eventAccounts.Add(eventAccount);
+
+                /*eventAccounts.Add(new EventAccount
                 {
                     Username = reader["AccountName"].ToString(),
                     Password = reader["Password"].ToString(),
                     Email = reader["Email"].ToString(),
                     PhoneNumber = reader["PhoneNumber"].ToString(),
-                });
+                });*/
             }
             sqlConnection.Close();
             return eventAccounts;
@@ -72,53 +113,96 @@ namespace EventManagementDataService
             sqlConnection.Open();
             SqlDataReader reader = selectCommand.ExecuteReader();
 
-            var completedEvents = new List<String>();
+            var completedEvents = new List<string>();
 
             while (reader.Read())
             {
-                completedEvents.Add(reader["CompletedEvents"].ToString());
+                string completedEvent = reader["CompletedEvents"].ToString();
+                string deserializedCompletedEvent = completedEvent;
+
+                completedEvents.Add(deserializedCompletedEvent);
             }
+
             sqlConnection.Close();
             return completedEvents;
-
         }
 
         public List<EventInfo> GetEvents()
         {
-            string selectStatement = "SELECT EventStartDate, EventStartTime, EventEndDate, EventEndTime, EventCreator FROM " +
+            string selectStatement = "SELECT EventName, EventStartDate, EventStartTime, EventEndDate, EventEndTime, EventCreator FROM " +
                                   "EventInfo";
             SqlCommand selectCommand = new SqlCommand(selectStatement, sqlConnection);
 
             sqlConnection.Open();
             SqlDataReader reader = selectCommand.ExecuteReader();
 
-            var eventInfo = new List<EventInfo>();
+            var eventInfos = new List<EventInfo>();
 
             while (reader.Read())
             {
-                eventInfo.Add(new EventInfo
+                EventInfo eventInfo = new EventInfo();
+                eventInfo.Name = reader["EventName"].ToString();
+                eventInfo.StartDate = reader["EventStartDate"].ToString();
+                eventInfo.StartTime = reader["EventStartTime"].ToString();
+                eventInfo.EndDate = reader["EventEndDate"].ToString();
+                eventInfo.EndTime = reader["EventEndTime"].ToString();
+                eventInfo.Creator = reader["EventCreator"].ToString();
+
+                eventInfos.Add(eventInfo);
+                
+                /*eventInfos.Add(new EventInfo
                 {
+                    Name = reader["EventName"].ToString(),
                     StartDate = reader["EventStartDate"].ToString(),
                     StartTime = reader["EventStartTime"].ToString(),
                     EndDate = reader["EventEndDate"].ToString(),
                     EndTime = reader["EventEndTime"].ToString(),
                     Creator = reader["EventCreator"].ToString()
-                });
+                });*/
                
             }
             sqlConnection.Close();
-            return eventInfo;
+            return eventInfos;
 
         }
 
         public bool RemoveEvent(EventInfo eventInfo)
         {
-            throw new NotImplementedException();
+            sqlConnection.Open();
+
+            var deleteStatement = "DELETE FROM EventInfo WHERE EventName = @Name AND EventStartDate = @StartDate " +
+                                  "AND EventStartTime = @StartTime AND EventCreator = @Creator";
+
+            SqlCommand deleteCommand = new SqlCommand(deleteStatement, sqlConnection);
+            deleteCommand.Parameters.AddWithValue("@Name", eventInfo.Name);
+            deleteCommand.Parameters.AddWithValue("@StartDate", eventInfo.StartDate);
+            deleteCommand.Parameters.AddWithValue("@StartTime", eventInfo.StartTime);
+            deleteCommand.Parameters.AddWithValue("@Creator", eventInfo.Creator);
+
+            int rowsAffected = deleteCommand.ExecuteNonQuery();
+            sqlConnection.Close();
+
+            return rowsAffected > 0; 
         }
 
         public void UpdateEvent(EventInfo eventInfo)
         {
-            throw new NotImplementedException();
+            sqlConnection.Open();
+            var updateStatement = "UPDATE EventInfo SET EventName = @Name, EventStartDate = @StartDate,EventStartTime = " +
+                                  "@StartTime, EventEndDate = @EndDate, EventEndTime = @EndTime, EventCreator = " +
+                                  "@Creator WHERE EventName = @Name AND EventStartDate = @StartDate AND EventStartTime = " +
+                                  "@StartTime AND EventCreator = @Creator";
+
+            SqlCommand updateCommand = new SqlCommand(updateStatement, sqlConnection);
+            updateCommand.Parameters.AddWithValue("@Name", eventInfo.Name);
+            updateCommand.Parameters.AddWithValue("@StartDate", eventInfo.StartDate);
+            updateCommand.Parameters.AddWithValue("@StartTime", eventInfo.StartTime);
+            updateCommand.Parameters.AddWithValue("@EndDate", eventInfo.EndDate);
+            updateCommand.Parameters.AddWithValue("@EndTime", eventInfo.EndTime);
+            updateCommand.Parameters.AddWithValue("@Creator", eventInfo.Creator);
+            updateCommand.ExecuteNonQuery();
+
+            sqlConnection.Close();  
         }
     }
 }
