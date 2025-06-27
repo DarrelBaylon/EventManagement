@@ -9,18 +9,15 @@ namespace EventManagementDataService
         public EventDataService()
         {
             //eventDataService = new TextFileDataService();
-            eventDataService = new InMemoryDataService();
-            //eventDataService = new JsonFileDataService();
+            //eventDataService = new InMemoryDataService();
+            eventDataService = new JsonFileDataService();
             //eventDataService = new DBDataService();
             info = new List<EventInfo>();
         }
         public List<EventAccount> accounts = new List<EventAccount>();
         public List<EventInfo> info;
         private int[] months = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-
         public int[] Months { get { return (int[])months.Clone(); } }
-
-       
 
         public List<EventAccount> GetAccounts()
         {
@@ -81,16 +78,5 @@ namespace EventManagementDataService
             eventDataService.AddCompletedEvent(eventAccount);
             return true;
         }
-        //public bool IsDuplicateUser(string username, string phoneNumber, string email)
-        //{
-            //foreach (EventAccount account in accounts)
-            //{
-               // if (account.Username == username || account.PhoneNumber == phoneNumber || account.Email == email)
-               // {
-                   // return true;
-               // }
-            //}
-            //return false;
-        //}
     }
 }

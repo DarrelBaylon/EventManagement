@@ -1,0 +1,20 @@
+[
+  {
+    "Username": "Darrel",
+    "Password": "da",
+    "PhoneNumber": "darrelandrewb@gmail.com",
+    "Email": "09295149022",
+    "CreatedEvents": [
+      "Basketball"
+    ],
+    "CompletedEvents": []
+  },
+  {
+    "Username": "Franz",
+    "Password": "fra",
+    "PhoneNumber": "gtgergffw",
+    "Email": "rgffgswfw",
+    "CreatedEvents": [],
+    "CompletedEvents": []
+  }
+]

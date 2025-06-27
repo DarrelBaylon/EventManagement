@@ -1,10 +1,6 @@
 ﻿using EventCommon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+
 
 namespace EventManagementDataService
 {
@@ -24,7 +20,6 @@ namespace EventManagementDataService
            ReadEventJsonDataFromFile();
            ReadCompletedEventJsonDataFromFile();
         }
-
         private void ReadAccountJsonDataFromFile()
         {
             string jsonText = File.ReadAllText(accountsJsonFilePath);
@@ -58,13 +53,11 @@ namespace EventManagementDataService
             completedEvents = JsonSerializer.Deserialize<List<string>>(
                 jsonText, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
-
         private void WriteAccountJsonDataToFile()
         {
             string jsonString = JsonSerializer.Serialize(eventAccounts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(accountsJsonFilePath, jsonString);
         }
-
         private void WriteEventJsonDataToFile()
         {
             string jsonString = JsonSerializer.Serialize(eventInfos, new JsonSerializerOptions { WriteIndented = true });
@@ -75,7 +68,6 @@ namespace EventManagementDataService
             string jsonString = JsonSerializer.Serialize(eventAccounts, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(completedEventsJsonFilePath, jsonString);
         }
-
         public int FindEventIndex(EventInfo eventInfo)
         {
             for (int i = 0; i < eventInfos.Count; i++)
@@ -92,24 +84,20 @@ namespace EventManagementDataService
             eventAccounts.Add(eventAccount);
             WriteAccountJsonDataToFile();
         }
-
         public void AddCompletedEvent(EventAccount eventAccount)
         {
             eventAccounts.Add(eventAccount);
             WriteCompletedEventJsonDataToFile();
         }
-
         public void AddEvent(EventInfo eventInfo)
         {
             eventInfos.Add(eventInfo);
             WriteEventJsonDataToFile();
         }
-
         public List<EventAccount> GetAccounts()
         {
             return eventAccounts;
         }
-
         public List<string> GetCompletedEvents()
         {
             for (int i = 0; i < eventAccounts.Count; i++)
@@ -120,12 +108,10 @@ namespace EventManagementDataService
             }
             return new List<string>();
         }
-
         public List<EventInfo> GetEvents()
         {
             return eventInfos;
         }
-
         public bool RemoveEvent(EventInfo eventInfo)
         {
             int index = -1;
@@ -151,7 +137,6 @@ namespace EventManagementDataService
 
             return false;
         }
-
         public void UpdateEvent(EventInfo eventInfo)
         {
             RemoveEvent(eventInfo);

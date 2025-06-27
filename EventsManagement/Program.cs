@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
+﻿
 using EventCommon;
 using EventManagement_BusinessDataLogic;
 using EventManagementDataService;
-using static System.Net.Mime.MediaTypeNames;
+
 
 
 //Baylon, Darrel Andrew P.
@@ -30,7 +28,6 @@ namespace EventsManagementSystem
         static void Main(string[] args)
 
         {
-            //eventManagementProcess.ClearAllEvents();
             LoginPage();
             static void LoginPage()
             {
@@ -432,7 +429,7 @@ namespace EventsManagementSystem
                         {
                             string selectedEvent = eventList[index].Name;
 
-                            // ✅ Only call once
+                           
                             bool result = eventManagementProcess.DeleteEvent(selectedEvent.Trim(), currentUsername.Trim());
 
                             if (result)
@@ -461,56 +458,6 @@ namespace EventsManagementSystem
 
                 DisplayEvents();
             }
-            /*static void DeleteEvent()
-            {
-
-                List<EventInfo> eventList = eventManagementProcess.GetAllEvents();
-
-                if (eventList.Count != 0)
-                {
-                    Console.WriteLine("--------------------");
-                    ViewEvent();
-                    Console.WriteLine("--------------------");
-
-                    Console.Write("Enter the NUMBER of the Event that you would like to DELETE: ");
-                    string input = Console.ReadLine();
-
-                    if (eventManagementProcess.ValidEventSelector(input, out int selectedIndex))
-                    {
-                        int index = selectedIndex - 1;
-
-                        if (index >= 0 && index < eventList.Count)
-                        {
-                            string selectedEvent = eventList[index].Name;
-                            
-                            bool result = eventManagementProcess.DeleteEvent(selectedEvent, currentUsername);
-
-                            if (eventManagementProcess.DeleteEvent(selectedEvent.Trim(), currentUsername.Trim()))
-                            {
-                                Console.WriteLine($"SUCCESSFULLY DELETED THE EVENT: [{selectedEvent}]");
-                            }
-                            else
-                            {
-                                Console.WriteLine("YOU ARE NOT AUTHORIZED TO DELETE THIS EVENT!");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("INVALID EVENT NUMBER. Please select a valid number.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("INVALID INPUT! Please enter a valid event number.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("THERE ARE CURRENTLY NO EVENTS TO DELETE!");
-                }
-
-                DisplayEvents();
-            }*/
             static void Signup()
             {
                 Console.Write("Enter Username: ");
@@ -546,10 +493,6 @@ namespace EventsManagementSystem
                                     {
                                         eventManagementProcess.RegisterAccounts(username, password, phoneNumber, email);
                                         Console.WriteLine("ACCOUNT CREATED SUCCESSFULLY!");
-                                        foreach (var acc in eventDataService.GetAccounts())
-                                        {
-                                            Console.WriteLine($"Username: {acc.Username}, Email: {acc.Email}");
-                                        }
                                     }
                                 }
                                 else
@@ -685,29 +628,6 @@ namespace EventsManagementSystem
 
                 Console.WriteLine("--------------------");
             }
-
-            /*static void ViewHistory()
-            {
-                Console.WriteLine("--------------------");
-
-                List<EventAccount> accounts = eventManagementProcess.GetCompletedEvents();
-
-                foreach (EventAccount account in accounts)
-                {
-                    if (account.CompletedEvents.Count > 0)
-                    {
-                        Console.WriteLine("THESE ARE THE COMPLETED EVENTS:");
-                        foreach (string completedEvent in account.CompletedEvents)
-                        {
-                            Console.WriteLine(completedEvent);
-                        }
-                        return;
-                    }
-                }
-
-                Console.WriteLine("THERE ARE CURRENTLY NO EVENTS THAT ARE MARKED AS COMPLETED!");
-                Console.WriteLine("--------------------");
-            }*/
         }
     }
 }

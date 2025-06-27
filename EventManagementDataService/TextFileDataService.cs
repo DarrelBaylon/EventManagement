@@ -1,9 +1,4 @@
 ﻿using EventCommon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventManagementDataService
 {
@@ -72,32 +67,6 @@ namespace EventManagementDataService
                 
             }
         }
-        /*private void GetCompletedEventDataFromFile()
-        {
-            var lines = File.ReadAllLines(completedEventFilePath);
-            foreach (var line in lines)
-            {
-                if (string.IsNullOrWhiteSpace(line)) continue;
-
-                var parts = line.Split('|');
-
-                if (parts.Length > 0)
-                {
-                    var account = new EventAccount
-                    {
-                        CompletedEvents = new List<string>()
-                    };
-
-                    foreach (var eventName in parts)
-                    {
-                        account.CompletedEvents.Add(eventName.Trim());
-                    }
-
-                    Accounts.Add(account);
-                }
-            }
-        }*/
-
         private void GetCompletedEventDataFromFile()
         {
             if (!File.Exists(completedEventFilePath))
@@ -152,19 +121,6 @@ namespace EventManagementDataService
                 }
             }
         }
-
-        /*private void WriteEventDataToFile()
-        {
-            var lines = new string[Events.Count];
-
-            for (int i = 0; i < Events.Count; i++)
-            {
-                lines[i] = $"{Events[i].Name}|{Events[i].StartDate}|{Events[i].EndDate}|{Events[i].StartTime}|{Events[i].EndTime}|" +
-                           $"{Events[i].Creator}|";
-            }
-            File.WriteAllLines(eventFilePath, lines);
-        }*/
-
         private void WriteEventDataToFile()
         {
             var lines = new List<string>();
@@ -179,7 +135,6 @@ namespace EventManagementDataService
 
         public int FindEventIndex(EventInfo eventInfo)
         {
-            
             for (int i = 0; i < Events.Count; i++)
             {
                 if (Events[i].Name == eventInfo.Name)
@@ -233,9 +188,6 @@ namespace EventManagementDataService
         }
         public void UpdateEvent(EventInfo eventInfo)
         {
-            RemoveEvent(eventInfo);
-            Events.Add(eventInfo);
-            WriteEventDataToFile();
         }
         public bool RemoveEvent(EventInfo eventInfo)
         {
@@ -244,22 +196,20 @@ namespace EventManagementDataService
             for (int i = 0; i < Events.Count; i++)
             {
                 if (Events[i].Name == eventInfo.Name &&
-                    Events[i].StartDate == eventInfo.StartDate &&
-                    Events[i].StartTime == eventInfo.StartTime &&
-                    Events[i].Creator == eventInfo.Creator)
+                   Events[i].StartDate == eventInfo.StartDate &&
+                   Events[i].StartTime == eventInfo.StartTime &&
+                   Events[i].Creator == eventInfo.Creator)
                 {
                     index = i;
                     break;
                 }
             }
-
             if (index != -1)
             {
                 Events.RemoveAt(index);
                 WriteEventDataToFile();
                 return true;
             }
-
             return false;
         }
     }

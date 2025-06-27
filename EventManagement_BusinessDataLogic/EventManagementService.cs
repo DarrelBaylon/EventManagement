@@ -1,12 +1,6 @@
 ﻿using EventManagementDataService;
 using EventCommon;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace EventManagement_BusinessDataLogic
 {
@@ -18,28 +12,36 @@ namespace EventManagement_BusinessDataLogic
 
         EventDataService eventsDataService = new EventDataService();
 
-        public void UpdateEvent(string eventName, string currentUsername)
+        public bool UpdateEvent(string eventName, string currentUsername)
         {
             EventAccount account = GetAccount(currentUsername);
 
-            if (account != null)
+            if (account == null)
             {
-                if (account.CreatedEvents.Contains(eventName))
-                {
-                    int index = GetEventIndex(eventName);
-
-                    if (index != -1)
-                    {
-                        EventInfo eventInfo = GetAllEvents()[index];
-
-                        if (eventInfo.Creator == currentUsername)
-                        {
-                            eventsDataService.RemoveEvent(eventInfo);
-                            account.CreatedEvents.Remove(eventName);
-                        }
-                    }
-                }
+                return false; 
             }
+
+            if (!account.CreatedEvents.Contains(eventName))
+            {
+                return false; 
+            }
+
+            int index = GetEventIndex(eventName);
+            if (index == -1)
+            {
+                return false; 
+            }
+
+            EventInfo eventInfo = GetAllEvents()[index];
+            if (eventInfo.Creator != currentUsername)
+            {
+                return false; 
+            }
+
+            eventsDataService.RemoveEvent(eventInfo);
+            account.CreatedEvents.Remove(eventName);
+
+            return true;
         }
         public bool CreateEvent(string eventName, string startDate, string endDate, string startTime, string endTime, string currentUsername)
         {

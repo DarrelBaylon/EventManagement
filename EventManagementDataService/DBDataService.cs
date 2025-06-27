@@ -1,22 +1,16 @@
 ﻿using EventCommon;
-using Microsoft.Data.Sql;
 using Microsoft.Data.SqlClient; 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EventManagementDataService
 {
     class DBDataService : IEventDataService
     {
+        public List<EventInfo> eventInfos { get; private set; } = new List<EventInfo>();
         static string connectionString
             = "Data Source =DESKTOP-RBGBVQ7\\SQLEXPRESS; Initial Catalog = " +
               "Event; Integrated Security = True; TrustServerCertificate=True;";
 
         static SqlConnection sqlConnection;
-
         public DBDataService()
         {
             sqlConnection = new SqlConnection(connectionString);
@@ -36,9 +30,6 @@ namespace EventManagementDataService
             insertCommand.ExecuteNonQuery();
             sqlConnection.Close();
         }
-
-
-
         public void AddCompletedEvent(EventAccount eventAccount)
         {
             var insertStatement = "INSERT INTO CompletedEvent (CompletedEvents) VALUES (@CompletedEvents)";
@@ -50,7 +41,6 @@ namespace EventManagementDataService
             insertCommand.ExecuteNonQuery();
             sqlConnection.Close();
         }
-
         public void AddEvent(EventInfo eventInfo)
         {
             var insertStatement = "INSERT INTO EventInfo (EventName, EventStartDate, EventStartTime, EventEndDate, EventEndTime, EventCreator) " +
@@ -68,12 +58,17 @@ namespace EventManagementDataService
             insertCommand.ExecuteNonQuery();
             sqlConnection.Close();
         }
-
         public int FindEventIndex(EventInfo eventInfo)
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < eventInfos.Count; i++)
+            {
+                if (eventInfos[i].Name == eventInfo.Name)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
-
         public List<EventAccount> GetAccounts()
         {
             string selectStatement = "SELECT AccountName, Password, Email, PhoneNumber FROM EventAccount";
@@ -92,20 +87,11 @@ namespace EventManagementDataService
                 eventAccount.PhoneNumber = reader["PhoneNumber"].ToString();
 
                 eventAccounts.Add(eventAccount);
-
-                /*eventAccounts.Add(new EventAccount
-                {
-                    Username = reader["AccountName"].ToString(),
-                    Password = reader["Password"].ToString(),
-                    Email = reader["Email"].ToString(),
-                    PhoneNumber = reader["PhoneNumber"].ToString(),
-                });*/
             }
             sqlConnection.Close();
             return eventAccounts;
 
         }
-
         public List<string> GetCompletedEvents()
         {
             string selectStatement = "SELECT CompletedEvents FROM CompletedEvent";
@@ -126,7 +112,6 @@ namespace EventManagementDataService
             sqlConnection.Close();
             return completedEvents;
         }
-
         public List<EventInfo> GetEvents()
         {
             string selectStatement = "SELECT EventName, EventStartDate, EventStartTime, EventEndDate, EventEndTime, EventCreator FROM " +
@@ -149,23 +134,11 @@ namespace EventManagementDataService
                 eventInfo.Creator = reader["EventCreator"].ToString();
 
                 eventInfos.Add(eventInfo);
-                
-                /*eventInfos.Add(new EventInfo
-                {
-                    Name = reader["EventName"].ToString(),
-                    StartDate = reader["EventStartDate"].ToString(),
-                    StartTime = reader["EventStartTime"].ToString(),
-                    EndDate = reader["EventEndDate"].ToString(),
-                    EndTime = reader["EventEndTime"].ToString(),
-                    Creator = reader["EventCreator"].ToString()
-                });*/
-               
             }
             sqlConnection.Close();
             return eventInfos;
 
         }
-
         public bool RemoveEvent(EventInfo eventInfo)
         {
             sqlConnection.Open();
@@ -184,7 +157,6 @@ namespace EventManagementDataService
 
             return rowsAffected > 0; 
         }
-
         public void UpdateEvent(EventInfo eventInfo)
         {
             sqlConnection.Open();
